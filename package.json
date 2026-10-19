@@ -1,0 +1,28 @@
+{
+  "name": "porchlight",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Porchlight: gentle, absence-aware check-ins for loved ones living alone, built on the Ring Partner API.",
+  "type": "module",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "demo": "node apps/porchlight/src/main.ts --mode=sim",
+    "start": "node apps/porchlight/src/main.ts",
+    "sim": "node packages/ring-partner-kit/src/sim/cli.ts",
+    "probe": "node apps/porchlight/src/tools/probe.ts",
+    "test": "node --test \"packages/*/test/**/*.test.ts\" \"apps/*/test/**/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json",
+    "check": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "^5.9.3"
+  }
+}

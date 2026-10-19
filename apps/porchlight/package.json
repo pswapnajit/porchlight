@@ -1,0 +1,10 @@
+{
+  "name": "@porchlight/app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "ring-partner-kit": "0.1.0"
+  }
+}

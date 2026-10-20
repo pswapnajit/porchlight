@@ -280,7 +280,7 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 - **Actual:** The route compares `Authorization: Bearer ${RING_WEBHOOK_SECRET}` (lines 50–55 at commit `76100aa`) and parses the body with `request.json()`, so the raw bytes needed for an HMAC are gone. If `RING_WEBHOOK_SECRET` is unset, it accepts any POST. If it is set, genuine Ring webhooks should fail the check, because the reference documents only an `X-Signature` header and no `Authorization` header. The reference also says to "verify first, parse second". The README describes the variable as a "Bearer token for webhook auth".
 - **Severity:** High. It is the canonical starting point, and copying it gives either an unauthenticated endpoint or one that rejects Ring's real traffic. Developers learn the wrong security model from the official source.
 - **Workaround used:** Wrote the verifier from the reference: `verifySignature()` in `ring-partner-kit` does HMAC-SHA256 over the raw bytes, accepts the `sha256=` prefix, and compares in constant time with `timingSafeEqual` (`packages/ring-partner-kit/src/webhooks.ts`, 10 tests).
-- **Suggestion:** Read the raw body (`await request.arrayBuffer()`), verify `X-Signature` with the HMAC signing key in constant time, then parse. Rename the variable to `RING_HMAC_SIGNING_KEY` to match the console. [[FILL: if you open a PR to the sample, link it here]]
+- **Suggestion:** Read the raw body (`await request.arrayBuffer()`), verify `X-Signature` with the HMAC signing key in constant time, then parse. Rename the variable to `RING_HMAC_SIGNING_KEY` to match the console.
 - Link: https://github.com/AmazonAppDev/ring-api-helloworld/blob/76100aa2892b2f4ece7879701bd9934d3f1e7743/app/api/webhook/route.ts#L50-L55
 
 ### F5. The sample's webhook schema drops `button_press`, device online/offline and sensor events
@@ -325,7 +325,6 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 
 **Why it matters.** The official sample verifies webhooks the wrong way (F4) and drops event types (F5), the Playground has no webhooks (F1), and pagination loops forever if you follow the docs (F3). Every Ring developer hits these problems in their first week. `ring-partner-kit` fixes them in one import and gives developers a local Ring to test against, so their first week can go into the app itself.
 
-[[OPTIONAL: if you also open the hello-world PR (F4 and F5), add it here as a second contribution: "Pull request to AmazonAppDev/ring-api-helloworld: verify X-Signature HMAC over the raw body and cover all documented webhook event types."]]
 
 ---
 

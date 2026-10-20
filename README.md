@@ -59,7 +59,7 @@ Ring's [computer-vision guidelines](https://developer.amazon.com/docs/ring/compu
 ## Privacy and dignity by design
 
 - **Nothing inside the home is ever viewed.** Indoor cameras contribute only "there was movement at 7:41".
-- **Snapshots are taken only when a decision depends on one**, only from the front door, and with Ring privacy zones masked before anything else happens. Only the masked, downscaled image is kept.
+- **Snapshots are taken only when a decision depends on one**, or when the doorbell rings so the parent's own TV can show who is there. They come only from the front door, with Ring privacy zones masked before anything else happens. Only the masked, downscaled image is kept, and a doorbell snapshot is never sent to a model.
 - **The parent comes first.** Every gentle check-in starts with them, and their home screen says plainly what the family can and cannot see.
 - **Who gets told, and when, never depends on a model.** The rules and ladder are deterministic and tested. AI only writes the evening note, answers questions and looks at the porch; anything uncertain (`"unsure"` or confidence below 0.6) becomes "ask a person", never a guess.
 - **Granular alerts:** each family member chooses which check-ins reach them (opt down, not just out). Quiet hours silence the chime.
@@ -97,6 +97,44 @@ Simulate Package, Vehicle or Motion events in the Playground and watch Porchligh
 
 `/mcp` is a self-hosted **MCP server (Streamable HTTP, protocol 2025-11-25)** built with the official SDK. A daughter can say *"Alexa, ask Porchlight how Mom's doing"*, *"…check on Mom"* or *"…I'm handling it"*. The parent can answer a check-in by voice with *"Alexa, tell Porchlight I'm OK"*, which matters for anyone who finds a touchscreen hard. Status tools link an **MCP Apps** card (`ui://porchlight/status-card.html`). The Alexa+ tab is a simulated host that is a real MCP client and shows the JSON-RPC traffic.
 
+## Fire TV
+
+[`apps/porchlight-tv`](apps/porchlight-tv) puts Rose's screen on the TV she already watches. It is a native Fire OS app (Kotlin, Jetpack Compose for TV with `androidx.tv`), modelled on Amazon's [`hello-world-fire-tv`](https://github.com/AmazonAppDev/hello-world-fire-tv) sample, and a client of the same Porchlight server (`/api/state`, the `/api/events` stream, `/api/resident/ok`, `/api/resident/package-inside`, `/api/snapshots/:id`).
+
+![Porchlight check-in on Fire TV](docs/screenshots/tv-checkin.png)
+
+- **Ambient:** a large clock, a greeting, today's care visit, and the same promise as her home screen: "Your family can see if you're up and about… They can't see inside your home."
+- **Check-in:** when Porchlight checks in, the TV shows one calm full-screen card with one big focused button ("I'm OK", or "I brought it in" for a package), and reads the message aloud with Android TextToSpeech. The OK button on the remote answers it. Voice still works through the Alexa+ tool `resident_im_ok`: *"Alexa, tell Porchlight I'm OK."*
+- **Doorbell:** when the doorbell rings, the privacy-masked Ring snapshot and, if the care schedule expects someone then, who is due ("Ana (home aide) is due at 10:00 AM"). That comes from the schedule, never from recognizing a face.
+- **Fire OS rules:** `LEANBACK_LAUNCHER`, `android.software.leanback` and `android.hardware.touchscreen` not required, a 320×180 banner, minSdk 28 (Fire OS 7), no Google Play Services. Large type, WCAG AA contrast (the lowest text pair is 6.7:1), an unmistakable D-pad focus state, and no zoom, glow or pulse animations.
+
+| Ambient | Doorbell |
+|---|---|
+| ![Ambient clock on the TV](docs/screenshots/tv-ambient.png) | ![Doorbell card on the TV](docs/screenshots/tv-visitor.png) |
+
+**Build and run on the Android TV emulator** (the hackathon FAQ accepts it for the Fire TV track). Needs JDK 17+ and the Android SDK command-line tools; the Gradle wrapper fetches everything else.
+
+```bash
+npm run demo                                         # Porchlight on :4000, in one terminal
+cd apps/porchlight-tv
+./gradlew assembleDebug                              # set ANDROID_HOME, or sdk.dir in local.properties
+sdkmanager "system-images;android-34;android-tv;arm64-v8a"   # x86_64 on an Intel Mac
+avdmanager create avd -n porchlight-tv -k "system-images;android-34;android-tv;arm64-v8a" -d tv_1080p
+emulator -avd porchlight-tv &
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n io.github.pswapnajit.porchlight.tv/.MainActivity
+```
+
+Then open **Behind the scenes** at http://localhost:4000 and play "A package in the heat". The check-in arrives on the TV; press OK on the remote (or `adb shell input keyevent KEYCODE_DPAD_CENTER`) and it resolves.
+
+The emulator reaches the host's server at `http://10.0.2.2:4000`, the default. **On a real Fire TV**, run the server on your network (`HOST=0.0.0.0 npm run demo`, which serves the demo without a login, so only on a network you trust), then sideload the APK with `adb connect <fire-tv-ip>` and point the app at your computer once:
+
+```bash
+adb shell am start -n io.github.pswapnajit.porchlight.tv/.MainActivity --es server http://192.168.1.20:4000
+```
+
+The app remembers it. You can also build it in with `./gradlew assembleDebug -Pporchlight.server=http://192.168.1.20:4000`.
+
 ## Project layout
 
 ```
@@ -109,6 +147,7 @@ apps/porchlight/src/
   app.ts       wiring: Ring actions, snapshots, runtime
   demo/        the demo household and scripted days
 apps/porchlight/web/   family dashboard, parent's screen, Alexa+ host, control room
+apps/porchlight-tv/     Fire TV app (Kotlin, Compose for TV): the parent's screen on their TV
 submission/            Devpost text, video script, product feedback and friction log
 ```
 

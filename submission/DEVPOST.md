@@ -12,11 +12,11 @@ Before submitting, replace every `[[FILL: …]]` (search the file for `[[`). The
 |---|---|
 | Project name | Porchlight |
 | Elevator pitch (≤200 chars) | Ring tells you when something happens. Porchlight notices when something doesn't: gentle, learned check-ins for a parent living alone, using the Ring devices already at their door. |
-| Primary track(s) | **Ring** (main). Also eligible for **Alexa+** (self-hosted MCP server, spec 2025-11-25, Streamable HTTP). A project can win only one track prize. |
+| Primary track(s) | **Ring** (main). Also eligible for **Alexa+** (self-hosted MCP server, spec 2025-11-25, Streamable HTTP) and **Fire TV** (native Fire OS app in Kotlin and Compose for TV, run on the Android TV emulator, which the FAQ accepts). A project can win only one track prize. |
 | Mini challenge(s) | **AWS Builder** (Amazon Bedrock Converse API + Strands Agents SDK). **Open Source** (`ring-partner-kit`, MIT). |
 | Code repository | https://github.com/pswapnajit/porchlight (public, MIT, license shown in the About section) |
 | Demo video | [[FILL: YouTube or Vimeo URL, public, under 3:00]] |
-| Built with | ring-partner-api, ring-developer-playground, amazon-bedrock, amazon-nova, strands-agents, model-context-protocol, mcp-apps, alexa-plus, node.js, typescript, webrtc, whep |
+| Built with | ring-partner-api, ring-developer-playground, amazon-bedrock, amazon-nova, strands-agents, model-context-protocol, mcp-apps, alexa-plus, fire-tv, fire-os, kotlin, jetpack-compose, compose-for-tv, node.js, typescript, webrtc, whep |
 | New or existing | New. Built from scratch during the Submission Period (first commit 20 October 2026). |
 
 ---
@@ -46,10 +46,12 @@ Porchlight learns a person's ordinary day from four weeks of Ring Event History.
 
 **Family dashboard:** today's timeline against the learned routine, open check-ins with exactly what Porchlight has done so far, an evening note, and "Ask Porchlight" (*"Did the delivery get brought in?"*). **Rose's screen:** a large-type home display for the parent that says plainly what the family can and cannot see. **Alexa+:** *"Alexa, ask Porchlight how Mom's doing"*, *"…check on Mom"*, *"…I'm handling it"*. Status answers come with an MCP Apps card for screen devices.
 
+**Rose's TV (Fire TV):** most older parents already watch TV every day, so Porchlight also lives there. On the Fire TV, Rose sees a large clock, a greeting and today's care visit, with the same promise as her home screen: the family can't see inside her home. When Porchlight checks in, one calm card fills the screen and is read aloud, with one big button ("I'm OK", or "I brought it in"), and a press of OK on the remote answers it. When the doorbell rings, the TV shows the privacy-masked Ring snapshot and who the care schedule says is due, such as "Ana (home aide) is due at 10:00 AM". That comes from the schedule, never from recognizing a face.
+
 ### Privacy and dignity by design
 
 - **Nothing inside the home is ever viewed.** Indoor cameras contribute only "there was movement at 7:41".
-- **Snapshots are taken only when a decision depends on one**, and only from the front door. Ring privacy zones from `configurations` are blacked out before any model or person sees the image. Cameras with end-to-end encryption are skipped, and Porchlight asks a person instead.
+- **Snapshots are taken only when a decision depends on one**, or when the doorbell rings so Rose's own TV can show who is there, and only from the front door. A doorbell snapshot is never sent to a model. Ring privacy zones from `configurations` are blacked out before any model or person sees the image. Cameras with end-to-end encryption are skipped, and Porchlight asks a person instead.
 - **Who gets told, and when, never depends on a model.** The rules and ladder are deterministic and covered by tests. AI only writes the evening note, answers questions and looks at the porch. Anything uncertain (`"unsure"`, or confidence below 0.6) becomes "ask a person", never a guess.
 - Each family member chooses which check-ins reach them. Quiet hours silence the chime. One click deletes all data.
 
@@ -71,6 +73,8 @@ Ring's computer-vision guidelines recommend a tiered funnel, and Porchlight foll
 **Strands Agents SDK (TypeScript):** "Ask Porchlight" is a Strands agent on Bedrock with six tools over Porchlight's records and the live Ring camera: `get_day_summary`, `get_open_checkins`, `get_recent_activity`, `get_usual_routine`, `check_porch_now` and `get_devices`. It is told to answer only from tool results and never to guess about health or who a visitor was.
 
 **Alexa+ via MCP:** `/mcp` is a self-hosted MCP server built with the official TypeScript SDK on Streamable HTTP, protocol **2025-11-25**, with 8 tools (`get_status`, `get_day_summary`, `check_porch`, `send_check_in`, `acknowledge_check_in`, `resolve_check_in`, `resident_im_ok`, `ask`). Status tools link an MCP Apps UI resource (`ui://porchlight/status-card.html`). The Alexa+ tab in the app is a simulated host that is a real MCP client (`initialize`, `tools/list`, `tools/call`, `resources/read`) and shows the JSON-RPC traffic.
+
+**Fire TV app:** `apps/porchlight-tv` is a native Fire OS app in Kotlin with Jetpack Compose for TV (`androidx.tv:tv-material`), modelled on Amazon's `hello-world-fire-tv` sample. It is another client of the same server: `GET /api/state`, the `/api/events` server-sent event stream, `POST /api/resident/ok` and `/api/resident/package-inside`, and `/api/snapshots/:id` for the doorbell picture. Read-aloud uses Android `TextToSpeech`, and the network code is plain `HttpURLConnection` with no Google Play Services. It follows the Fire OS manifest rules (`LEANBACK_LAUNCHER`, leanback and touchscreen not required, a 320×180 banner, minSdk 28 for Fire OS 7), with large type, WCAG AA contrast and a focus state you can see from the sofa, with no zoom or glow.
 
 **A contract-faithful Ring simulator** in `ring-partner-kit` serves the same REST shapes, signs real HMAC webhooks and renders porch snapshots. The five scripted demo days run through it end to end.
 
@@ -111,22 +115,24 @@ The most useful signal in a home is often the one that didn't fire. And for a ca
 Target length: 2:45, which is under the 3:00 limit judges watch to. Record at 1440×900 or larger, with the app at 100% zoom.
 
 **Before recording:**
-- `npm run demo` (port 4000) for segments 1–5. Add `AWS_BEARER_TOKEN_BEDROCK` to `.env` first, so the porch check and the answers come from Bedrock (the AWS Builder judges will look for it). Without it, the screen says "Simulator ground truth (no Bedrock configured)".
-- For segment 6: a fresh Playground token in `.env` (it lasts about 30 minutes), then `npm start` in a second terminal on another port (`PORT=4001 npm start`), and the Ring Developer Playground open in a browser tab.
-- **Segment 6 is required for the Ring track.** The rules say the video must show the project working through "a simulator or an actual Ring device", meaning one listed in Ring's documentation. That is the Developer Playground, not Porchlight's own simulator.
+- `npm run demo` (port 4000) for segments 1–6. Add `AWS_BEARER_TOKEN_BEDROCK` to `.env` first, so the porch check and the answers come from Bedrock (the AWS Builder judges will look for it). Without it, the screen says "Simulator ground truth (no Bedrock configured)".
+- For segment 4: the Android TV emulator with Porchlight TV installed and open, against the same `npm run demo` (README, "Fire TV"). Run the emulator with a window so it can be screen-recorded with its sound, or record it with `adb shell screenrecord` (no sound). Keep the TV's read-aloud low under the voice-over.
+- For segment 7: a fresh Playground token in `.env` (it lasts about 30 minutes), then `npm start` in a second terminal on another port (`PORT=4001 npm start`), and the Ring Developer Playground open in a browser tab.
+- **Segment 7 is required for the Ring track.** The rules say the video must show the project working through "a simulator or an actual Ring device", meaning one listed in Ring's documentation. That is the Developer Playground, not Porchlight's own simulator.
 
 | Time | On screen | Voice-over |
 |---|---|---|
-| **0:00–0:15** | Title card, then the Family dashboard (open check-in, Maria's phone) | "Ring tells you when something happens. Porchlight notices when something doesn't. This is Rose. She's 78 and lives alone. Her daughter Maria lives two hours away, and every day she wonders one thing: is Mom up and about?" |
-| **0:15–0:30** | "What Porchlight learned" card; Today timeline with the dashed check-in line | "Porchlight uses the Ring devices already at Rose's home. It read four weeks of Ring Event History and learned her day: usually up between 7:31 and 8:20, so if there's no sign of her by 9:10, it checks in." |
-| **0:30–1:10** | Behind the scenes → Play "A package in the heat" at 240×. Webhook list fills (HMAC verified). Cut to the check-in card with the masked snapshot, then Rose's screen "I brought it in", Maria's phone, then the All clear | "Here's a hot afternoon. A delivery arrives. Ring itself classifies it as a package, and that starts a timer, shorter today because it's 31 degrees inside. When the timer runs out, Porchlight takes a doorbell snapshot, blacks out the privacy zones, and asks a vision model on Amazon Bedrock: is the box still there? It is. So Rose hears a soft chime and sees one big button. She doesn't answer, so Maria gets the alert. When Rose brings it in, the door sensor and the camera see it, and Maria gets an all clear." |
-| **1:10–1:30** | Check-in card: ladder steps with times; tap "I'm on it" | "Every check-in climbs the same ladder: Rose first, always, then a text, then Maria, then the rest of the family. One tap of 'I'm on it' stops everyone else being woken. And who gets told is never a model's decision. The rules are deterministic and tested." |
-| **1:30–1:55** | Alexa+ tab: "Alexa, ask Porchlight how Mom is doing" → reply + MCP App card; MCP traffic panel; then "(Rose) Alexa, tell Porchlight I'm OK" | "Maria can just ask Alexa. Porchlight is a self-hosted MCP server, spec 2025-11-25, and this page is a real MCP client. Status answers come with an MCP Apps card. And Rose can answer a check-in with her voice, which matters if a touchscreen is hard." |
-| **1:55–2:25** | Split: Ring Developer Playground → simulate a Package event. Porchlight (live, `api.amazonvision.com`) → Behind the scenes, API log shows the Event History calls; the event lands on the timeline | "This is the live Ring API. In the Developer Playground I simulate a package at the front door. The Playground has no webhooks, so Porchlight polls Event History, and seconds later the delivery is on Rose's timeline, ready to start the same timer." [[FILL: adjust to what the live run shows]] |
-| **2:25–2:40** | GitHub: `ring-partner-kit` README, then `npm test` passing (40) | "Everything talks to Ring through ring-partner-kit, a typed, zero-dependency client with HMAC webhook verification, privacy masking and a full Ring simulator. I've released it as open source, with 40 tests across the project." |
-| **2:40–2:45** | Rose's screen: "They can't see inside your home." Logo. | "Porchlight. It never looks inside. It just notices." |
+| **0:00–0:12** | Title card, then the Family dashboard (open check-in, Maria's phone) | "Ring tells you when something happens. Porchlight notices when something doesn't. Rose is 78 and lives alone. Every day, her daughter Maria wonders: is Mom up and about?" |
+| **0:12–0:25** | "What Porchlight learned" card; Today timeline with the dashed check-in line | "Porchlight uses Rose's own Ring devices. From four weeks of Event History it learned her day: usually up by 8:20, so if there's no sign of her by 9:10, it checks in." |
+| **0:25–1:00** | Behind the scenes → Play "A package in the heat" at 240×. Webhook list fills (HMAC verified). Cut to the check-in card with the masked snapshot | "Here's a hot afternoon. A delivery arrives, and Ring itself classifies it as a package. That starts a timer, shorter today because it's 31 degrees inside. When it runs out, Porchlight takes a doorbell snapshot, blacks out the privacy zones, and asks a vision model on Amazon Bedrock: is the box still there? It is. So Porchlight checks in with Rose first." |
+| **1:00–1:20** | **Fire TV** (Android TV emulator): the check-in fills Rose's TV and is read aloud; OK on the remote; "Thank you, Rose."; the family dashboard shows it resolved, "No one else was bothered". Then a doorbell ring: the TV's visitor card | "Rose doesn't need a tablet. Porchlight is on the Fire TV she already watches: one calm card, read aloud, and one button. She presses OK on the remote, and that's it. Maria is never bothered. And when the doorbell rings, it shows the porch and who's due." |
+| **1:20–1:35** | A second run where Rose doesn't answer (or "A quiet morning"): check-in card with ladder steps and times; tap "I'm on it" | "If Rose doesn't answer, the ladder climbs: a text, then Maria, then the family. One tap of 'I'm on it' stops everyone else being woken. Who gets told is never a model's decision; the rules are deterministic and tested." |
+| **1:35–1:57** | Alexa+ tab: "Alexa, ask Porchlight how Mom is doing" → reply + MCP App card; MCP traffic panel; then "(Rose) Alexa, tell Porchlight I'm OK" | "Maria can just ask Alexa. Porchlight is a self-hosted MCP server, spec 2025-11-25, and this page is a real MCP client, with an MCP Apps card for screens. And Rose can answer a check-in by voice." |
+| **1:57–2:27** | Split: Ring Developer Playground → simulate a Package event. Porchlight (live, `api.amazonvision.com`) → Behind the scenes, API log shows the Event History calls; the event lands on the timeline | "This is the live Ring API. In the Developer Playground I simulate a package at the front door. The Playground has no webhooks, so Porchlight polls Event History, and seconds later the delivery is on Rose's timeline, ready to start the same timer." [[FILL: adjust to what the live run shows]] |
+| **2:27–2:40** | GitHub: `ring-partner-kit` README, then `npm test` passing (40) | "Everything talks to Ring through ring-partner-kit: a typed, zero-dependency client with HMAC webhooks, privacy masking and a full Ring simulator. It's open source, with 40 tests across the project." |
+| **2:40–2:45** | Rose's TV, ambient: "They can't see inside your home." Logo. | "Porchlight. It never looks inside. It just notices." |
 
-About 350 spoken words. At a calm 150 words a minute that is about 2:20 of speech, which leaves roughly 25 seconds of silence for the moments that need it: the scenario playing, the Alexa card appearing, the Playground event landing. The first two segments run near 155 wpm, so trim a few words there if they feel rushed.
+About 325 spoken words. At a calm 150 words a minute that is about 2:10 of speech, which leaves roughly 35 seconds of silence for the moments that need it: the scenario playing, the TV reading the check-in, the Alexa card appearing, the Playground event landing. Segments 2 and 5 run near 150 wpm, so trim a word or two there if they feel rushed.
 
 ---
 
@@ -225,6 +231,24 @@ Auth is a Bedrock API key (`AWS_BEARER_TOKEN_BEDROCK`) or normal AWS credentials
 
 **Would I build with it again?** **Yes.** MCP made Porchlight's Alexa+ integration a thin layer over the same functions the app already had.
 
+### 6. Fire TV: Fire OS on the Android TV emulator, Compose for TV, and the `hello-world-fire-tv` sample
+
+**What I used and for what.** `apps/porchlight-tv`, a native Fire OS app for the parent's TV: Kotlin, Jetpack Compose for TV (`androidx.tv:tv-material` 1.1.0), Android `TextToSpeech` for read-aloud, and plain `HttpURLConnection` plus `org.json` for Porchlight's REST API and server-sent events, so it needs no Google Play Services. The manifest and app structure follow Amazon's `hello-world-fire-tv` sample. I ran it on the Android TV emulator (API 34, arm64), which the hackathon FAQ accepts for this track, against the same demo server, and drove the remote with `adb shell input keyevent`.
+
+**What worked well.**
+- Compose for TV's `Button` handles the remote for you: OK on the D-pad is a click, with no key handling of my own. Per-state colors and borders (`ButtonDefaults.colors`, `ButtonDefaults.border`) gave a focus state you can see from the sofa, and `ButtonDefaults.scale(focusedScale = 1f)` turned off the zoom, which matters for viewers who find motion distracting.
+- The Fire TV manifest rules are short, and the sample shows them: `LEANBACK_LAUNCHER`, leanback and touchscreen not required, a banner.
+- Fire OS is Android, so everything else was standard Android: the server client, text-to-speech, focus. Only the manifest is Fire-specific, which made the TV a thin client of the server Porchlight already had.
+- `adb shell input keyevent KEYCODE_DPAD_CENTER` and `adb exec-out screencap -p` made the remote flow scriptable, so "press OK and the check-in resolves" could be checked against `/api/state` instead of by eye.
+
+**What needs work.**
+- There is no Fire OS emulator image: `sdkmanager` lists only Android TV and Google TV images. The Android TV emulator can't show Fire-specific behavior: how the Fire TV launcher shows the app and its banner, VoiceView, and Amazon's own text-to-speech engine. Read-aloud did work there: the Android TV image ships Google's TTS engine (the phone image I tried first had none, so the app logs that and still shows the card).
+- The `hello-world-fire-tv` sample is pinned to AGP 8.2.2, Kotlin 1.9.0, Compose BOM 2023.08 and `tv-foundation` 1.0.0-alpha11, and configures Compose with `composeOptions { kotlinCompilerExtensionVersion }`, the setup from before Kotlin 2.0, so I took the manifest and structure from it but not the build files. It also uses the square launcher icon as the TV banner, so it doesn't show what a 320×180 banner should look like.
+
+**Onboarding.** Reading the sample and writing the manifest took minutes. Most of the time went into the emulator: a 777 MB Android TV system image, with no Fire OS image to choose instead.
+
+**Would I build with it again?** **Yes.** The TV is the screen most older parents already use every day, and a Fire TV app is ordinary Android with Compose, so the parent's screen moved onto the TV in a day. A Fire OS emulator image would let developers check the Fire-specific parts before buying a device.
+
 ### Feature requests (optional)
 
 | Request | Why it matters to Porchlight | Priority |
@@ -235,6 +259,7 @@ Auth is a Bedrock API key (`AWS_BEARER_TOKEN_BEDROCK`) or normal AWS credentials
 | A device type or placement hint (doorbell, indoor, outdoor) in device attributes | Caretaking logic depends on "front door" vs "indoor", which can only be guessed from capabilities now | Nice-to-have |
 | Expose whether Smart Alerts is on (the docs say no API does) | Lets an app tell "no classification" from "nothing classified" and prompt the user to turn it on | Nice-to-have |
 | Sensor and chime devices in the Playground | Lets Early Access features (door sensor, temperature, chimes) be tested without hardware | Important |
+| A Fire OS emulator system image (Fire TV launcher, VoiceView, Amazon text-to-speech) | Fire TV apps are tested on Google's Android TV emulator today, so Fire-specific behavior can't be checked without a device | Important |
 
 ---
 
@@ -342,6 +367,6 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 - [ ] `npm run probe` and `npm start` work with a fresh Playground token; fill in the live `[[FILL]]` items above
 - [ ] Bedrock key added, so the video shows real Bedrock output (porch check and Ask Porchlight)
 - [ ] Video recorded per the script, under 3:00, uploaded **public** to YouTube or Vimeo, with no copyrighted music
-- [ ] Devpost form: description, video URL, repo URL, tracks (Ring, Alexa+), mini challenges (AWS Builder, Open Source), product feedback, Open Source fields, feature requests, friction log
-- [ ] Screenshots in the Devpost gallery: `docs/screenshots/family.png`, `all-clear.png`, `home.png`, `alexa.png`, `scenes.png`
+- [ ] Devpost form: description, video URL, repo URL, tracks (Ring, Alexa+, Fire TV), mini challenges (AWS Builder, Open Source), product feedback, Open Source fields, feature requests, friction log
+- [ ] Screenshots in the Devpost gallery: `docs/screenshots/family.png`, `all-clear.png`, `home.png`, `alexa.png`, `scenes.png`, `tv-checkin.png`, `tv-ambient.png`, `tv-visitor.png`
 - [ ] Submit before **Fri 23 Oct 2026 12:00 PT**

@@ -27,6 +27,15 @@ export interface Scenario {
 }
 
 const indoor = (at: string, label = 'Movement in the living room'): Step => ({ at, label, run: async ({ rt, ids }) => void await rt.sim!.world.motion(ids.livingRoom, 'human') });
+// Whoever rings is still standing at the door, so the doorbell snapshot shows them.
+const ring = (at: string, label: string): Step => ({
+  at,
+  label,
+  run: async ({ rt, ids }) => {
+    rt.sim!.world.place(ids.doorbell, 'person', rt.clock.now(), rt.clock.now() + 2 * 60_000);
+    await rt.sim!.world.ding(ids.doorbell);
+  },
+});
 const doorCycle = (at: string, label: string, holdMin = 2): Step[] => {
   const close = minutesAfter(at, holdMin);
   return [
@@ -47,7 +56,7 @@ export const SCENARIOS: Scenario[] = [
       indoor('07:41', 'Rose is up: movement in the living room'),
       indoor('08:20'),
       { at: '09:59', label: 'Ana walks up to the door', run: async ({ rt, ids }) => void await rt.sim!.world.motion(ids.doorbell, 'human') },
-      { at: '10:00', label: 'Ana rings the doorbell', run: async ({ rt, ids }) => void await rt.sim!.world.ding(ids.doorbell) },
+      ring('10:00', 'Ana rings the doorbell'),
       ...doorCycle('10:01', 'Rose opens the door for Ana'),
       indoor('11:15'),
       { at: '12:40', label: 'Package delivered', run: ({ rt, ids }) => deliver(rt, ids.doorbell) },
@@ -115,8 +124,8 @@ export const SCENARIOS: Scenario[] = [
     weekday: true,
     steps: [
       { at: '09:59', label: 'Ana walks up to the door', run: async ({ rt, ids }) => void await rt.sim!.world.motion(ids.doorbell, 'human') },
-      { at: '10:00', label: 'Ana rings the doorbell', run: async ({ rt, ids }) => void await rt.sim!.world.ding(ids.doorbell) },
-      { at: '10:06', label: 'Ana rings again', run: async ({ rt, ids }) => void await rt.sim!.world.ding(ids.doorbell) },
+      ring('10:00', 'Ana rings the doorbell'),
+      ring('10:06', 'Ana rings again'),
       ...doorCycle('10:14', 'Rose opens the door (she was in the shower)'),
       indoor('10:16'),
     ],

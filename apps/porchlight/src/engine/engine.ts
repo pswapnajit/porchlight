@@ -661,14 +661,7 @@ export class CareEngine extends EventEmitter {
   }
 
   #expectedVisit(at: number): { who: string; time: string } | undefined {
-    const lp = localParts(at, this.household.timeZone);
-    for (const v of this.household.careSchedule) {
-      const start = parseHHMM(v.time);
-      if (v.days.includes(lp.weekday) && lp.minuteOfDay >= start - v.windowMin && lp.minuteOfDay <= start + v.windowMin) {
-        return { who: v.who, time: formatMinuteOfDay(start) };
-      }
-    }
-    return undefined;
+    return expectedVisit(this.household, at);
   }
 
   #entryCameraId(): string | undefined {
@@ -681,6 +674,18 @@ export class CareEngine extends EventEmitter {
     if (this.activity.length > 400) this.activity.shift();
     this.emit('activity', entry);
   }
+}
+
+/** The care-schedule visit expected around this time, if any (e.g. the home aide at 10:00 on weekdays). */
+export function expectedVisit(household: Household, at: number): { who: string; time: string } | undefined {
+  const lp = localParts(at, household.timeZone);
+  for (const v of household.careSchedule) {
+    const start = parseHHMM(v.time);
+    if (v.days.includes(lp.weekday) && lp.minuteOfDay >= start - v.windowMin && lp.minuteOfDay <= start + v.windowMin) {
+      return { who: v.who, time: formatMinuteOfDay(start) };
+    }
+  }
+  return undefined;
 }
 
 function describeSignal(s: Signal, name: string, when: string): string {

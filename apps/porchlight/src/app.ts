@@ -22,9 +22,9 @@ import { Bedrock, aiConfigFromEnv, type AiConfig } from './ai/bedrock.ts';
 import { writeDigest, type Digest } from './ai/digest.ts';
 import { BedrockVision, NoVision, SimulatorOracleVision, type VisionAnalyzer } from './ai/vision.ts';
 import { DEMO_TZ, buildDemoWorld, demoHousehold, seedHistory, type DemoDevices } from './demo/household.ts';
-import { CareEngine, type CareActions } from './engine/engine.ts';
+import { CareEngine, expectedVisit, type CareActions } from './engine/engine.ts';
 import { formatClock, localParts, localTimeToEpoch } from './engine/time.ts';
-import type { ActionResult, CircleMember, Concern, DeviceRole, Household, SnapshotRef, VisionResult } from './engine/types.ts';
+import type { ActionResult, CircleMember, Concern, DeviceRole, Household, Signal, SnapshotRef, VisionResult } from './engine/types.ts';
 import { backfillFromRing, startHistoryPoller } from './ring/ingest.ts';
 
 export interface PhoneMessage {
@@ -41,6 +41,8 @@ export interface PhoneMessage {
 export interface HomeScreen {
   message?: { text: string; concernId: string; kind: string; at: number };
   lastChime?: { at: number; name: string };
+  /** The latest doorbell ring, for the resident's TV: a privacy-masked snapshot, and who the care schedule expects then (a schedule, never an identification). */
+  visitor?: { at: number; deviceLabel?: string; expected?: { who: string; time: string }; snapshot?: SnapshotRef };
 }
 
 interface StoredSnapshot extends SnapshotRef {
@@ -238,6 +240,15 @@ export async function createRuntime(opts: RuntimeOptions): Promise<Runtime> {
       bus.emit('event', { type: 'home', home });
     }
   });
+  // The resident's TV shows who is at the door: one masked snapshot per ring, never sent to a model.
+  engine.on('signal', (s: Signal) => {
+    if (s.kind !== 'visitor_ring' || clock.now() - s.at > 5 * 60_000) return;
+    void (async () => {
+      const snapshot = s.deviceId ? await actions.captureSnapshot(s.deviceId, s.at) : undefined;
+      home.visitor = { at: s.at, deviceLabel: s.deviceLabel, expected: expectedVisit(household, s.at), snapshot };
+      bus.emit('event', { type: 'home', home });
+    })();
+  });
 
   let devices: Device[] = [];
   const refreshDevices = async () => {
@@ -303,6 +314,7 @@ export async function createRuntime(opts: RuntimeOptions): Promise<Runtime> {
       snapshots.clear();
       phone.length = 0;
       home.message = undefined;
+      home.visitor = undefined;
       runtime.lastDigest = undefined;
       void engine.relearn();
       bus.emit('event', { type: 'reset' });

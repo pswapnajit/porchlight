@@ -42,7 +42,7 @@ flowchart LR
 
 ## How it uses the Ring Partner API
 
-Everything goes through [`ring-partner-kit`](packages/ring-partner-kit), a typed, zero-dependency client I wrote for this project and released separately as open source.
+Everything goes through [`ring-partner-kit`](packages/ring-partner-kit), a typed, zero-dependency client I wrote for this project and released separately as open source at [pswapnajit/ring-partner-kit](https://github.com/pswapnajit/ring-partner-kit).
 
 | Ring API | What Porchlight does with it |
 |---|---|

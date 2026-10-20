@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Porchlight lamp (apps/porchlight/web/assets/icon.svg), scaled into the adaptive-icon safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <group
+        android:pivotX="16"
+        android:pivotY="16"
+        android:scaleX="0.8"
+        android:scaleY="0.8">
+        <path
+            android:fillAlpha="0.35"
+            android:fillColor="#FBE6CC"
+            android:pathData="M16,13m-7,0a7,7 0,1 1,14 0a7,7 0,1 1,-14 0" />
+        <path
+            android:fillColor="#E08A2B"
+            android:pathData="M16,13m-3.6,0a3.6,3.6 0,1 1,7.2 0a3.6,3.6 0,1 1,-7.2 0" />
+        <path
+            android:pathData="M10,26h12M13,22h6M16,17v5"
+            android:strokeWidth="2"
+            android:strokeColor="#FBF7F0"
+            android:strokeLineCap="round" />
+    </group>
+</vector>

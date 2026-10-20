@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Porchlight server runs on the home network (or on the host machine, 10.0.2.2 from the emulator) over plain HTTP. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

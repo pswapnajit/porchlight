@@ -134,12 +134,13 @@ export async function createRuntime(opts: RuntimeOptions): Promise<Runtime> {
   }
 
   const snapshots = new Map<string, StoredSnapshot>();
-  const putSnapshot = (deviceId: string, at: number, bytes: Uint8Array, contentType: string): StoredSnapshot => {
+  // Returns only the reference: the bytes stay here and are served by /api/snapshots/:id, never inlined into state JSON.
+  const putSnapshot = (deviceId: string, at: number, bytes: Uint8Array, contentType: string): SnapshotRef => {
     const id = randomUUID();
-    const s: StoredSnapshot = { id, deviceId, at, url: `/api/snapshots/${id}`, bytes, contentType };
-    snapshots.set(id, s);
+    const ref: SnapshotRef = { id, deviceId, at, url: `/api/snapshots/${id}` };
+    snapshots.set(id, { ...ref, bytes, contentType });
     if (snapshots.size > 60) snapshots.delete(snapshots.keys().next().value!);
-    return s;
+    return ref;
   };
 
   const vision: VisionAnalyzer = bedrock ? new BedrockVision(bedrock) : opts.mode === 'sim' ? new SimulatorOracleVision() : new NoVision();

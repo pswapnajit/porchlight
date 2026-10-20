@@ -208,7 +208,7 @@ main { max-width: 1320px; margin: 0 auto; padding: 24px; }
 /* ---------- resident home screen ---------- */
 .home-frame { max-width: 920px; margin: 0 auto; background: var(--surface); border: 1px solid var(--line); border-radius: 36px; padding: 40px 44px; box-shadow: var(--shadow); text-align: center; }
 .home-clock { font-size: clamp(3.5rem, 9vw, 6rem); font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
-.home-date { font-size: 1.3rem; color: var(--muted); }
+.home-date { font-size: 1.3rem; color: var(--muted); letter-spacing: normal; font-weight: 500; margin-top: 8px; }
 .home-greeting { font-size: clamp(1.6rem, 3.6vw, 2.4rem); font-weight: 650; margin: 18px 0 26px; }
 .home-card { border-radius: 28px; padding: 28px; margin: 0 auto 22px; max-width: 720px; background: var(--accent-soft); border: 2px solid var(--accent); }
 .home-card p { font-size: clamp(1.25rem, 2.6vw, 1.7rem); line-height: 1.35; margin: 0 0 20px; color: var(--ink); }

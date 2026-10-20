@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Porchlight</title>
+  <meta name="description" content="Gentle, absence-aware check-ins for loved ones living alone, built on Ring.">
+  <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="13" r="6" class="glow"/><path d="M10 26h12M13 22h6M16 19v3" class="stem"/><circle cx="16" cy="13" r="3.2" class="bulb"/></svg>
+      <span class="brand-name">Porchlight</span>
+    </div>
+    <div class="who" id="who" aria-live="polite"></div>
+    <nav class="tabs" aria-label="Views">
+      <button class="tab" data-view="family" aria-current="page">Family</button>
+      <button class="tab" data-view="home">Rose's screen</button>
+      <button class="tab" data-view="alexa">Alexa+</button>
+      <button class="tab" data-view="scenes">Behind the scenes</button>
+    </nav>
+    <span class="mode" id="mode"></span>
+  </header>
+
+  <main id="main">
+    <!-- Family app -->
+    <section class="view" id="view-family" aria-labelledby="family-title">
+      <h1 class="sr-only" id="family-title">Family dashboard</h1>
+      <div class="family-grid">
+        <div class="col-main">
+          <article class="hero" id="hero" aria-live="polite"></article>
+          <section class="card" aria-labelledby="today-title">
+            <div class="card-head">
+              <h2 id="today-title">Today</h2>
+              <span class="legend" id="legend"></span>
+            </div>
+            <div id="timeline" class="timeline"></div>
+            <p class="sr-only" id="timeline-text"></p>
+          </section>
+          <section id="checkins" aria-labelledby="checkins-title">
+            <h2 class="section-title" id="checkins-title">Check-ins</h2>
+            <div id="open-checkins"></div>
+            <div id="past-checkins"></div>
+          </section>
+          <section class="card ask" aria-labelledby="ask-title">
+            <div class="card-head"><h2 id="ask-title">Ask Porchlight</h2><span class="tag" id="ask-model"></span></div>
+            <form id="ask-form" class="ask-form">
+              <label class="sr-only" for="ask-input">Ask a question about Rose's day</label>
+              <input id="ask-input" autocomplete="off" placeholder="Did the delivery get brought in?" maxlength="300">
+              <button class="btn primary" type="submit">Ask</button>
+            </form>
+            <div class="chips" id="ask-chips"></div>
+            <div id="ask-answer" class="answer" aria-live="polite"></div>
+          </section>
+        </div>
+        <aside class="col-side">
+          <section class="phone" aria-labelledby="phone-title">
+            <div class="phone-notch" aria-hidden="true"></div>
+            <h2 class="phone-title" id="phone-title">Maria's phone</h2>
+            <ol class="feed" id="feed" aria-live="polite"></ol>
+          </section>
+          <section class="card" aria-labelledby="note-title">
+            <div class="card-head"><h2 id="note-title">Evening note</h2><button class="btn small" id="digest-btn">Write it now</button></div>
+            <div id="digest" class="digest"></div>
+          </section>
+          <section class="card" aria-labelledby="routine-title">
+            <h2 id="routine-title">What Porchlight learned</h2>
+            <div id="routine"></div>
+          </section>
+          <section class="card" aria-labelledby="devices-title">
+            <div class="card-head"><h2 id="devices-title">Ring devices</h2><button class="btn small ghost" id="refresh-devices">Refresh</button></div>
+            <ul class="devices" id="devices"></ul>
+          </section>
+          <section class="card privacy" aria-labelledby="privacy-title">
+            <h2 id="privacy-title">Privacy</h2>
+            <p>Porchlight never looks inside the home: indoor cameras only tell it <em>whether</em> there was movement. It looks at the front-door camera only when a decision depends on it, and blacks out the privacy zones set in the Ring app first.</p>
+            <button class="btn small danger" id="delete-data">Delete all Porchlight data</button>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <!-- The resident's screen -->
+    <section class="view home" id="view-home" hidden aria-labelledby="home-greeting">
+      <div class="home-frame">
+        <div class="home-clock" id="home-clock" aria-hidden="true"></div>
+        <h1 class="home-greeting" id="home-greeting">Good morning, Rose</h1>
+        <div id="home-card" aria-live="assertive"></div>
+        <div class="home-foot">
+          <p id="home-today"></p>
+          <p class="home-privacy">Your family can see if you're up and about, who rang the doorbell and when deliveries arrive. They can't see inside your home.</p>
+          <label class="speak-toggle"><input type="checkbox" id="speak-toggle" checked> Read messages aloud</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alexa+ (simulated host, real MCP client) -->
+    <section class="view" id="view-alexa" hidden aria-labelledby="alexa-title">
+      <div class="alexa-grid">
+        <div class="echo">
+          <div class="echo-screen">
+            <div class="echo-status"><span class="echo-ring" id="echo-ring" aria-hidden="true"></span><span id="echo-state">Alexa+ is ready</span></div>
+            <h1 class="sr-only" id="alexa-title">Alexa+ with Porchlight</h1>
+            <p class="echo-said" id="echo-said"></p>
+            <p class="echo-reply" id="echo-reply" aria-live="polite">Try: "How's Mom doing?"</p>
+            <iframe id="echo-card" title="Porchlight card (MCP App)" sandbox="allow-scripts" hidden></iframe>
+          </div>
+          <form id="alexa-form" class="alexa-form">
+            <button class="mic" type="button" id="mic" aria-label="Talk to Alexa"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+            <label class="sr-only" for="alexa-input">Say something to Alexa</label>
+            <input id="alexa-input" autocomplete="off" placeholder="Alexa, ask Porchlight how Mom is doing">
+            <button class="btn primary" type="submit">Send</button>
+          </form>
+          <div class="chips" id="alexa-chips"></div>
+        </div>
+        <section class="card trace" aria-labelledby="trace-title">
+          <div class="card-head"><h2 id="trace-title">MCP traffic</h2><span class="tag">Streamable HTTP · 2025-11-25</span></div>
+          <p class="muted small">This page is a real MCP client: it calls Porchlight's <code>/mcp</code> endpoint with <code>initialize</code>, <code>tools/list</code> and <code>tools/call</code>, the same way Alexa+ connects to a self-hosted MCP server.</p>
+          <ol class="trace-list" id="trace"></ol>
+        </section>
+      </div>
+    </section>
+
+    <!-- Control room -->
+    <section class="view" id="view-scenes" hidden aria-labelledby="scenes-title">
+      <h1 class="sr-only" id="scenes-title">Behind the scenes</h1>
+      <div class="scenes-grid">
+        <section class="card" aria-labelledby="sc-title">
+          <h2 id="sc-title">Demo days</h2>
+          <p class="muted small" id="sc-note"></p>
+          <div class="scenarios" id="scenarios"></div>
+        </section>
+        <section class="card" aria-labelledby="ai-title">
+          <h2 id="ai-title">How it decides</h2>
+          <div id="ai-status"></div>
+          <div id="live-view"></div>
+        </section>
+        <section class="card log" aria-labelledby="api-title">
+          <div class="card-head"><h2 id="api-title">Ring Partner API calls</h2><span class="tag" id="api-base"></span></div>
+          <ol class="mono-list" id="api-log"></ol>
+        </section>
+        <section class="card log" aria-labelledby="wh-title">
+          <div class="card-head"><h2 id="wh-title">Ring webhooks</h2><span class="tag">HMAC-SHA256 verified</span></div>
+          <ol class="mono-list" id="webhooks"></ol>
+        </section>
+        <section class="card log wide" aria-labelledby="act-title">
+          <h2 id="act-title">What Porchlight did</h2>
+          <ol class="activity" id="activity"></ol>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="dock" id="dock" hidden>
+    <div class="dock-time"><span id="dock-clock"></span><span class="dock-speed" id="dock-speed"></span></div>
+    <p class="dock-caption" id="dock-caption" aria-live="polite"></p>
+    <div class="dock-controls">
+      <button class="btn small ghost" data-speed="1">1×</button>
+      <button class="btn small ghost" data-speed="60">60×</button>
+      <button class="btn small ghost" data-speed="240">240×</button>
+      <button class="btn small ghost" id="dock-pause">Pause</button>
+      <button class="btn small" id="dock-skip">Skip ahead</button>
+    </div>
+  </div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script type="module" src="/assets/app.js"></script>
+</body>
+</html>

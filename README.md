@@ -72,7 +72,7 @@ Requires Node.js 22.18 or newer. No keys are needed for the simulated demo.
 ```bash
 npm install
 npm run demo        # simulated Ring account with 4 weeks of history -> http://localhost:4000
-npm test            # 40 tests: SDK, engine, end-to-end scenarios, MCP
+npm test            # 41 tests: SDK, engine, end-to-end scenarios, MCP
 ```
 
 The **Behind the scenes** tab plays scripted days: an ordinary day, a quiet morning, a package in the heat, the door opening at 2:48 AM, and an aide who can't get in. Events reach Porchlight as signed webhooks and Ring API calls, exactly as they would from devices.
@@ -155,6 +155,8 @@ submission/            Devpost text, video script, product feedback and friction
 
 - Ring sensors and chimes are in Early Access (dynamic scopes), and the Developer Playground provides cameras. Sensor and chime behavior is built to the documented contract and exercised against the included simulator, not real sensors.
 - Texts to the parent and family alerts are shown in the app (plus optional real push via ntfy.sh). SMS and voice calls would come next.
+- On Fire TV, a check-in appears only while Porchlight TV is open as the ambient screen. It doesn't yet interrupt other apps.
+- The TV app is tested on the Android TV emulator (there is no Fire OS emulator image), not on a Fire TV device.
 - Porchlight is not an emergency service or a medical device. It notices absence and asks people to check.
 
 MIT licensed. Made by Swapnajit Patra for the Amazon Developer Hackathon "Build, Ship, Shape" (October 2026).

@@ -78,7 +78,7 @@ Ring's computer-vision guidelines recommend a tiered funnel, and Porchlight foll
 
 **A contract-faithful Ring simulator** in `ring-partner-kit` serves the same REST shapes, signs real HMAC webhooks and renders porch snapshots. The five scripted demo days run through it end to end.
 
-**Tests:** 40 (`npm test`), covering the SDK, the rules engine, end-to-end scenarios over HTTP and the MCP endpoint.
+**Tests:** 41 (`npm test`), covering the SDK, the rules engine, end-to-end scenarios over HTTP and the MCP endpoint.
 
 ### Challenges I ran into
 
@@ -104,6 +104,7 @@ The most useful signal in a home is often the one that didn't fire. And for a ca
 - Real SMS and voice-call steps on the ladder. Family alerts already work as real phone push through ntfy.sh.
 - Ring sensors and chimes on real hardware, once Early Access opens. Today they are built to the documented contract and exercised against the simulator.
 - Multi-home circles (a parent and an in-law), and a weekly trend note: "Mom has been getting up 40 minutes later this month."
+- On Fire TV, a check-in only appears while Porchlight TV is open (it is the ambient screen). Next: interrupt whatever is playing, as a Fire TV notification or picture-in-picture card, so Rose sees it during a show.
 - Publishing on the Ring Appstore.
 
 *Porchlight is not an emergency service or a medical device. It notices absence and asks people to check.*
@@ -123,13 +124,13 @@ Target length: 2:45, which is under the 3:00 limit judges watch to. Record at 14
 | Time | On screen | Voice-over |
 |---|---|---|
 | **0:00–0:12** | Title card, then the Family dashboard (open check-in, Maria's phone) | "Ring tells you when something happens. Porchlight notices when something doesn't. Rose is 78 and lives alone. Every day, her daughter Maria wonders: is Mom up and about?" |
-| **0:12–0:25** | "What Porchlight learned" card; Today timeline with the dashed check-in line | "Porchlight uses Rose's own Ring devices. From four weeks of Event History it learned her day: usually up by 8:20, so if there's no sign of her by 9:10, it checks in." |
+| **0:12–0:25** | "What Porchlight learned" card; Today timeline with the dashed check-in line | "Porchlight uses Rose's own Ring devices. From four weeks of Event History it learned her day: usually up by [8:25], so if there's no sign of her by [9:15], it checks in." *(Read both times off the "What Porchlight learned" card on the day you record: the demo's four weeks of history are generated relative to today, so they shift by a few minutes.)* |
 | **0:25–1:00** | Behind the scenes → Play "A package in the heat" at 240×. Webhook list fills (HMAC verified). Cut to the check-in card with the masked snapshot | "Here's a hot afternoon. A delivery arrives, and Ring itself classifies it as a package. That starts a timer, shorter today because it's 31 degrees inside. When it runs out, Porchlight takes a doorbell snapshot, blacks out the privacy zones, and asks a vision model on Amazon Bedrock: is the box still there? It is. So Porchlight checks in with Rose first." |
 | **1:00–1:20** | **Fire TV** (Android TV emulator): the check-in fills Rose's TV and is read aloud; OK on the remote; "Thank you, Rose."; the family dashboard shows it resolved, "No one else was bothered". Then a doorbell ring: the TV's visitor card | "Rose doesn't need a tablet. Porchlight is on the Fire TV she already watches: one calm card, read aloud, and one button. She presses OK on the remote, and that's it. Maria is never bothered. And when the doorbell rings, it shows the porch and who's due." |
 | **1:20–1:35** | A second run where Rose doesn't answer (or "A quiet morning"): check-in card with ladder steps and times; tap "I'm on it" | "If Rose doesn't answer, the ladder climbs: a text, then Maria, then the family. One tap of 'I'm on it' stops everyone else being woken. Who gets told is never a model's decision; the rules are deterministic and tested." |
 | **1:35–1:57** | Alexa+ tab: "Alexa, ask Porchlight how Mom is doing" → reply + MCP App card; MCP traffic panel; then "(Rose) Alexa, tell Porchlight I'm OK" | "Maria can just ask Alexa. Porchlight is a self-hosted MCP server, spec 2025-11-25, and this page is a real MCP client, with an MCP Apps card for screens. And Rose can answer a check-in by voice." |
 | **1:57–2:27** | Split: Ring Developer Playground → simulate a Package event. Porchlight (live, `api.amazonvision.com`) → Behind the scenes, API log shows the Event History calls; the event lands on the timeline | "This is the live Ring API. In the Developer Playground I simulate a package at the front door. The Playground has no webhooks, so Porchlight polls Event History, and seconds later the delivery is on Rose's timeline, ready to start the same timer." [[FILL: adjust to what the live run shows]] |
-| **2:27–2:40** | GitHub: `ring-partner-kit` README, then `npm test` passing (40) | "Everything talks to Ring through ring-partner-kit: a typed, zero-dependency client with HMAC webhooks, privacy masking and a full Ring simulator. It's open source, with 40 tests across the project." |
+| **2:27–2:40** | GitHub: `ring-partner-kit` README, then `npm test` passing (41) | "Everything talks to Ring through ring-partner-kit: a typed, zero-dependency client with HMAC webhooks, privacy masking and a full Ring simulator. It's open source, with 41 tests across the project." |
 | **2:40–2:45** | Rose's TV, ambient: "They can't see inside your home." Logo. | "Porchlight. It never looks inside. It just notices." |
 
 About 325 spoken words. At a calm 150 words a minute that is about 2:10 of speech, which leaves roughly 35 seconds of silence for the moments that need it: the scenario playing, the TV reading the check-in, the Alexa card appearing, the Playground event landing. Segments 2 and 5 run near 150 wpm, so trim a word or two there if they feel rushed.
@@ -242,8 +243,9 @@ Auth is a Bedrock API key (`AWS_BEARER_TOKEN_BEDROCK`) or normal AWS credentials
 - `adb shell input keyevent KEYCODE_DPAD_CENTER` and `adb exec-out screencap -p` made the remote flow scriptable, so "press OK and the check-in resolves" could be checked against `/api/state` instead of by eye.
 
 **What needs work.**
-- There is no Fire OS emulator image: `sdkmanager` lists only Android TV and Google TV images. The Android TV emulator can't show Fire-specific behavior: how the Fire TV launcher shows the app and its banner, VoiceView, and Amazon's own text-to-speech engine. Read-aloud did work there: the Android TV image ships Google's TTS engine (the phone image I tried first had none, so the app logs that and still shows the card).
-- The `hello-world-fire-tv` sample is pinned to AGP 8.2.2, Kotlin 1.9.0, Compose BOM 2023.08 and `tv-foundation` 1.0.0-alpha11, and configures Compose with `composeOptions { kotlinCompilerExtensionVersion }`, the setup from before Kotlin 2.0, so I took the manifest and structure from it but not the build files. It also uses the square launcher icon as the TV banner, so it doesn't show what a 320×180 banner should look like.
+- There is no Fire OS emulator image (friction F7): `sdkmanager` lists only Android TV and Google TV images. The Android TV emulator can't show Fire-specific behavior: how the Fire TV launcher shows the app and its banner, VoiceView, and Amazon's own text-to-speech engine. Read-aloud did work there: the Android TV image ships Google's TTS engine (the phone image I tried first had none, so the app logs that and still shows the card).
+- Initial focus on a screen change can leave a `tv-material` button focused but drawn unfocused (friction F9). On a remote that is the whole interaction, so it deserves a line in the focus guidance.
+- The `hello-world-fire-tv` sample is pinned to AGP 8.2.2, Kotlin 1.9.0, Compose BOM 2023.08 and `tv-foundation` 1.0.0-alpha11, and configures Compose with `composeOptions { kotlinCompilerExtensionVersion }`, the setup from before Kotlin 2.0, so I took the manifest and structure from it but not the build files (friction F8). It also uses the square launcher icon as the TV banner, so it doesn't show what a 320×180 banner should look like.
 
 **Onboarding.** Reading the sample and writing the manifest took minutes. Most of the time went into the emulator: a 777 MB Android TV system image, with no Fire OS image to choose instead.
 
@@ -329,6 +331,37 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 - **Workaround used:** Query the union of both lists (5 filters) and treat the vocabulary as open-ended. [[FILL: after `npm run probe`, note whether `motion.package_delivery` and `motion.animal` returned events in the Playground]]
 - **Suggestion:** Publish one subtype table and link to it from both places.
 
+### F7. There is no Fire OS emulator image
+
+- **Task attempted:** Test Porchlight TV, the Fire OS app for the parent's TV, without a Fire TV device.
+- **Steps taken:** Listed system images with `sdkmanager --list`, looking for a Fire OS or Amazon image. Then installed `system-images;android-34;android-tv;arm64-v8a` and created a 1080p TV AVD on an M1 Mac.
+- **Expected:** A Fire OS image (or an Amazon-hosted SDK add-on) that runs the Fire TV launcher, so the banner, launch behavior, VoiceView and Amazon's text-to-speech can be checked before buying a device.
+- **Actual:** `sdkmanager` lists only Google's `android-tv` and `google-tv` images, with no Fire, Amazon or Vega entry. The Android TV emulator runs the app, which the hackathon FAQ accepts, but it shows Google's launcher, Google's TTS engine and Google promos: after one reinstall, the Google TV launcher came back in front of the app with a "Play Movies is becoming Shop" dialog, and the app had to be relaunched. The image also unpacks to 8.6 GB on disk, which is a lot for an 8 GB, nearly full laptop.
+- **Severity:** Medium. Fire-specific behavior can't be verified without hardware, and every Fire TV developer tests on someone else's launcher.
+- **Workaround used:** Built to the Fire OS manifest rules from Amazon's sample (`LEANBACK_LAUNCHER`, leanback and touchscreen not required, a 320×180 banner, minSdk 28, no Google Play Services), ran on the Android TV emulator, and drove the remote with `adb shell input keyevent` against the live demo server.
+- **Suggestion:** Publish a Fire OS system image for the Android emulator (as an SDK add-on site that `sdkmanager` can use), and document which Fire behaviors the Android TV emulator cannot reproduce.
+
+### F8. The `hello-world-fire-tv` sample is pinned to a 2023-era Android toolchain
+
+- **Task attempted:** Start Porchlight TV from Amazon's native Fire TV sample (`AmazonAppDev/hello-world-fire-tv`, last commit 10 October 2024).
+- **Steps taken:** Read its Gradle files and manifest to reuse the build setup with the current Android SDK (build-tools 36, Kotlin 2.x).
+- **Expected:** A sample that builds with the current toolchain, so it can be copied as is.
+- **Actual:** It pins AGP 8.2.2, Kotlin 1.9.0, `composeOptions { kotlinCompilerExtensionVersion = "1.5.1" }` (the Compose setup from before Kotlin 2.0's Compose compiler plugin), Compose BOM 2023.08.00 and `androidx.tv:tv-foundation:1.0.0-alpha11`. The manifest also uses the square launcher icon as the TV banner (`android:banner="@mipmap/ic_launcher"`), so it doesn't show what a 320×180 Fire TV banner should look like.
+- **Severity:** Low. Copying the sample's build files means downgrading Kotlin or migrating the build first.
+- **Workaround used:** Took the manifest and app structure from the sample and wrote fresh build files (AGP 9, Kotlin 2.4 with the Compose compiler plugin, Compose BOM 2026.06, `tv-material` 1.1.0), plus a real 320×180 banner.
+- **Suggestion:** Move the sample to the Kotlin 2 Compose compiler plugin and stable `tv-material`, add a proper banner, and pin it in CI so it keeps building.
+- Link: https://github.com/AmazonAppDev/hello-world-fire-tv/blob/50108f4fc4a9dc054be86d851286355df027524a/build.gradle.kts
+
+### F9. A TV button can be focused but drawn unfocused when focus is requested as a screen appears
+
+- **Task attempted:** When a check-in arrives, put remote focus on its one button ("I'm OK" or "I brought it in"), so the first press of OK answers it.
+- **Steps taken:** Used `FocusRequester.requestFocus()` in a `LaunchedEffect` when the card appears, the usual Compose pattern, with `tv-material` `Button` and per-state `ButtonDefaults.colors`/`border`.
+- **Expected:** The button is focused and shows its focused style.
+- **Actual:** The UI tree reported the button `focused="true"`, and OK did press it, but it was drawn in its unfocused style when the screen switched from the ambient clock to a check-in. On a TV that is the one cue telling an older viewer what OK will do. The button's look comes from its interaction stream, and the fix below suggests focus arrived before that stream was being collected.
+- **Severity:** Medium for TV apps: nothing errors, and the focus state is the whole interaction model on a remote.
+- **Workaround used:** Drive the button's colors and border from `Modifier.onFocusChanged`, which always reports the current state (`apps/porchlight-tv/.../ui/Screens.kt`, `PorchButton`).
+- **Suggestion:** Cover initial focus on screen changes in the Fire TV focus guidance (`vega-tv-interfaces-sample` already covers focus for Vega), with this pattern, and use it in the samples.
+
 ---
 
 ## Open Source mini challenge
@@ -368,5 +401,5 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 - [ ] Bedrock key added, so the video shows real Bedrock output (porch check and Ask Porchlight)
 - [ ] Video recorded per the script, under 3:00, uploaded **public** to YouTube or Vimeo, with no copyrighted music
 - [ ] Devpost form: description, video URL, repo URL, tracks (Ring, Alexa+, Fire TV), mini challenges (AWS Builder, Open Source), product feedback, Open Source fields, feature requests, friction log
-- [ ] Screenshots in the Devpost gallery: `docs/screenshots/family.png`, `all-clear.png`, `home.png`, `alexa.png`, `scenes.png`, `tv-checkin.png`, `tv-ambient.png`, `tv-visitor.png`
+- [ ] Screenshots in the Devpost gallery: `docs/screenshots/family.png`, `all-clear.png`, `home.png`, `alexa.png`, `scenes.png`, `tv-checkin.png`, `tv-ambient.png`, `tv-visitor.png`, `tv-thanks.png`, `tv-checkin.png`, `tv-ambient.png`, `tv-visitor.png`
 - [ ] Submit before **Fri 23 Oct 2026 12:00 PT**

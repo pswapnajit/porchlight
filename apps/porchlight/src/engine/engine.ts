@@ -174,6 +174,15 @@ export class CareEngine extends EventEmitter {
     return this.#run(async () => this.#relearn());
   }
 
+  /** Forgets doorbell and delivery checks that haven't come due yet (a demo day starting over). */
+  clearPendingChecks(): Promise<void> {
+    return this.#run(async () => {
+      this.#pendingRings = [];
+      this.#pendingDeliveries = [];
+      this.#recheckAt.clear();
+    });
+  }
+
   /** Waits until queued work has finished (tests, shutdown). */
   idle(): Promise<void> {
     return this.#run(async () => {});

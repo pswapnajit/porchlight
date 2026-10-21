@@ -158,6 +158,7 @@ export async function runScenario(rt: Runtime, id: string): Promise<ScenarioRun>
     c.resolution = { by: 'system', text: 'Closed when a new demo day started.' };
     for (const s of c.ladder) if (!s.firedAt) s.skipped = true;
   }
+  await rt.engine.clearPendingChecks();
   rt.home.message = undefined;
 
   // Move to the next suitable day so every scenario starts from a clean morning.

@@ -115,6 +115,14 @@ test("missed visit: the aide's unanswered ring is urgent; the door opening resol
   assert.equal(c!.status, 'resolved');
 });
 
+test('a new demo day drops checks still pending from the previous one', async () => {
+  await play('missed-visit');
+  await until('10:02'); // Ana has rung; the "was it answered?" check is due at 10:04
+  await play('ordinary-day');
+  await until('09:30');
+  assert.equal(latest('unanswered_door'), undefined, "yesterday's ring did not leak into today");
+});
+
 test('hot afternoon: heat alert, then the package left out is confirmed by vision and cleared when brought in', async () => {
   await play('package-heat');
   await until('11:35');

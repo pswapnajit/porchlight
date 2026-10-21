@@ -148,7 +148,7 @@ apps/porchlight/src/
   demo/        the demo household and scripted days
 apps/porchlight/web/   family dashboard, parent's screen, Alexa+ host, control room
 apps/porchlight-tv/     Fire TV app (Kotlin, Compose for TV): the parent's screen on their TV
-submission/            Devpost text, video script, product feedback and friction log
+submission/            Devpost text, video script, feedback, friction log, and how to submit
 ```
 
 ## Honest limitations

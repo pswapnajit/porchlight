@@ -28,13 +28,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
@@ -126,7 +129,8 @@ private fun Ambient(home: HomeState, now: ZonedDateTime, elapsed: Long, ui: TvUi
             Text(it, fontSize = 28.sp, color = Palette.accentInk)
         }
         Spacer(Modifier.height(26.dp))
-        PorchButton("I'm OK", onImOk, Modifier.focusRequester(focus), prominent = false)
+        // Sized to its label: the button's text fills its width, so uncapped it would span the screen.
+        PorchButton("I'm OK", onImOk, Modifier.focusRequester(focus).widthIn(max = 420.dp), prominent = false)
         ui.error?.let { Text(it, fontSize = 22.sp, color = Palette.warn, modifier = Modifier.padding(top = 10.dp)) }
         Spacer(Modifier.weight(1f))
         Text(PRIVACY_LINE, fontSize = 23.sp, lineHeight = 31.sp, color = Palette.muted, textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 780.dp))
@@ -244,22 +248,28 @@ private fun Status(ui: TvUi) {
 @Composable
 private fun PorchButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, prominent: Boolean = true, minWidth: Dp = 380.dp, fontSize: TextUnit = 34.sp) {
     val shape = RoundedCornerShape(28.dp)
+    // The look follows onFocusChanged, not the button's interaction stream: a screen that requests focus as it
+    // appears can focus the button before that stream is collected, leaving it focused but drawn unfocused.
+    var focused by remember { mutableStateOf(false) }
+    val fill = if (focused && prominent) Palette.accent else Palette.surface2
+    val ink = if (focused && prominent) Palette.onAccent else Palette.ink
+    val ring = if (focused) Border(BorderStroke(5.dp, if (prominent) Palette.focusRing else Palette.accent), shape = shape) else Border(BorderStroke(3.dp, Palette.line), shape = shape)
     Button(
         onClick = onClick,
-        modifier = modifier.defaultMinSize(minWidth = minWidth, minHeight = 84.dp),
+        modifier = modifier.onFocusChanged { focused = it.isFocused }.defaultMinSize(minWidth = minWidth, minHeight = 84.dp),
         scale = ButtonDefaults.scale(scale = 1f, focusedScale = 1f, pressedScale = 1f),
         shape = ButtonDefaults.shape(shape = shape),
         colors = ButtonDefaults.colors(
-            containerColor = Palette.surface2,
-            contentColor = Palette.ink,
-            focusedContainerColor = if (prominent) Palette.accent else Palette.surface2,
-            focusedContentColor = if (prominent) Palette.onAccent else Palette.ink,
+            containerColor = fill,
+            contentColor = ink,
+            focusedContainerColor = fill,
+            focusedContentColor = ink,
             pressedContainerColor = Palette.accentInk,
             pressedContentColor = Palette.onAccent,
         ),
         border = ButtonDefaults.border(
-            border = Border(BorderStroke(3.dp, Palette.line), shape = shape),
-            focusedBorder = Border(BorderStroke(5.dp, if (prominent) Palette.focusRing else Palette.accent), shape = shape),
+            border = ring,
+            focusedBorder = ring,
             pressedBorder = Border(BorderStroke(5.dp, Palette.focusRing), shape = shape),
         ),
         contentPadding = PaddingValues(horizontal = 48.dp, vertical = 18.dp),

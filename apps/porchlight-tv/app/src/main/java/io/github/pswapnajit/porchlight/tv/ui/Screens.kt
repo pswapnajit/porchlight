@@ -118,12 +118,12 @@ private fun Ambient(home: HomeState, now: ZonedDateTime, elapsed: Long, ui: TvUi
     Column(Modifier.fillMaxSize().then(shift), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.weight(1f))
         Row(verticalAlignment = Alignment.Bottom) {
-            Text(clock(now), fontSize = 132.sp, lineHeight = 132.sp, fontWeight = FontWeight.Bold, color = Palette.ink)
+            Text(clock(now), fontSize = 128.sp, lineHeight = 128.sp, fontFamily = Display, fontWeight = FontWeight.Bold, color = Palette.ink)
             Text(" " + amPm(now), fontSize = 44.sp, fontWeight = FontWeight.SemiBold, color = Palette.muted, modifier = Modifier.padding(bottom = 18.dp))
         }
         Text(DateTimeFormatter.ofPattern("EEEE, MMMM d", Locale.US).format(now), fontSize = 32.sp, color = Palette.muted)
         Spacer(Modifier.height(22.dp))
-        Text("${greeting(now)}, ${home.name}", fontSize = 50.sp, fontWeight = FontWeight.SemiBold, color = Palette.ink)
+        Text("${greeting(now)}, ${home.name}", fontSize = 50.sp, fontFamily = Display, fontWeight = FontWeight.Bold, color = Palette.ink)
         todayLine(home, now)?.let {
             Spacer(Modifier.height(10.dp))
             Text(it, fontSize = 28.sp, color = Palette.accentInk)
@@ -187,7 +187,7 @@ private fun VisitorCard(visitor: Visitor, ui: TvUi, onDismiss: () -> Unit) {
             Text("Ring doorbell · privacy zones are blacked out", fontSize = 20.sp, color = Palette.muted, modifier = Modifier.padding(top = 10.dp))
         }
         Column(Modifier.width(330.dp)) {
-            Text("Someone rang the doorbell", fontSize = 40.sp, lineHeight = 48.sp, fontWeight = FontWeight.SemiBold, color = Palette.ink)
+            Text("Someone rang the doorbell", fontSize = 46.sp, lineHeight = 52.sp, fontFamily = Display, fontWeight = FontWeight.Bold, color = Palette.ink)
             Text("at ${clock(at)} ${amPm(at)}", fontSize = 28.sp, color = Palette.muted, modifier = Modifier.padding(top = 6.dp))
             Spacer(Modifier.height(22.dp))
             if (visitor.expectedWho != null) {
@@ -208,7 +208,7 @@ private fun Thanks(t: Screen.Thanks) {
             Text("✓", fontSize = 52.sp, fontWeight = FontWeight.Bold, color = Palette.onAccent)
         }
         Spacer(Modifier.height(28.dp))
-        Text(t.title, fontSize = 60.sp, fontWeight = FontWeight.SemiBold, color = Palette.ink)
+        Text(t.title, fontSize = 68.sp, fontFamily = Display, fontWeight = FontWeight.Bold, color = Palette.ink)
         Spacer(Modifier.height(12.dp))
         Text(t.body, fontSize = 32.sp, color = Palette.muted)
     }
@@ -251,9 +251,9 @@ private fun PorchButton(text: String, onClick: () -> Unit, modifier: Modifier = 
     // The look follows onFocusChanged, not the button's interaction stream: a screen that requests focus as it
     // appears can focus the button before that stream is collected, leaving it focused but drawn unfocused.
     var focused by remember { mutableStateOf(false) }
-    val fill = if (focused && prominent) Palette.accent else Palette.surface2
+    val fill = if (focused && prominent) Palette.teal else Palette.surface2
     val ink = if (focused && prominent) Palette.onAccent else Palette.ink
-    val ring = if (focused) Border(BorderStroke(5.dp, if (prominent) Palette.focusRing else Palette.accent), shape = shape) else Border(BorderStroke(3.dp, Palette.line), shape = shape)
+    val ring = if (focused) Border(BorderStroke(5.dp, if (prominent) Palette.focusRing else Palette.teal), shape = shape) else Border(BorderStroke(3.dp, Palette.line), shape = shape)
     Button(
         onClick = onClick,
         modifier = modifier.onFocusChanged { focused = it.isFocused }.defaultMinSize(minWidth = minWidth, minHeight = 84.dp),
@@ -264,7 +264,7 @@ private fun PorchButton(text: String, onClick: () -> Unit, modifier: Modifier = 
             contentColor = ink,
             focusedContainerColor = fill,
             focusedContentColor = ink,
-            pressedContainerColor = Palette.accentInk,
+            pressedContainerColor = Palette.ink,
             pressedContentColor = Palette.onAccent,
         ),
         border = ButtonDefaults.border(

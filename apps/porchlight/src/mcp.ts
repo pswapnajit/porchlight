@@ -214,13 +214,12 @@ export async function handleMcp(rt: Runtime, req: IncomingMessage, res: ServerRe
 
 const STATUS_CARD_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-:root{color-scheme:light dark;--bg:#fffaf2;--ink:#1f1a14;--muted:#6b6257;--ok:#2f7d4f;--warn:#b26a00;--bad:#b3261e;--card:#ffffff}
-@media (prefers-color-scheme:dark){:root{--bg:#17130f;--ink:#f6efe6;--muted:#b9ad9f;--card:#221c16}}
-body{margin:0;font:16px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
-.card{margin:12px;padding:16px 18px;border-radius:18px;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.state{display:inline-block;font-weight:600;font-size:13px;letter-spacing:.02em;padding:3px 10px;border-radius:999px;color:#fff;background:var(--ok)}
-.state.checking_in{background:var(--warn)}.state.urgent{background:var(--bad)}
-h1{font-size:20px;margin:10px 0 6px}p{margin:6px 0;color:var(--muted)}img{width:100%;border-radius:12px;margin-top:10px}
+:root{color-scheme:light;--bg:#F0F1F3;--ink:#111315;--muted:#646970;--card:#FFFFFF}
+body{margin:0;font:16px/1.4 Inter,-apple-system,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.card{margin:10px;padding:16px 18px;border-radius:20px;background:var(--card);box-shadow:0 1px 2px rgba(16,18,20,.06)}
+.state{display:inline-block;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:999px;color:#0A6E55;background:#DDF4EC}
+.state.checking_in{color:#8A5A00;background:#FFF3C4}.state.urgent{color:#B42318;background:#FDE2E2}
+h1{font:900 24px/1.1 "Roboto Condensed","Helvetica Neue","Arial Narrow",sans-serif;margin:10px 0 6px}p{margin:6px 0;color:var(--muted)}img{width:100%;border-radius:14px;margin-top:10px}
 ul{padding-left:18px;margin:8px 0}li{margin:4px 0}
 </style></head><body><div class="card" id="root"><p>Waiting for Porchlight…</p></div>
 <script>

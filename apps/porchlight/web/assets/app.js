@@ -71,8 +71,10 @@ function render() {
   const mode = $('#mode');
   mode.textContent = S.mode === 'live' ? 'Live · Ring Partner API' : 'Simulated Ring account';
   mode.className = `mode ${S.mode}`;
-  document.querySelectorAll('.tab[data-view="home"]').forEach((b) => (b.textContent = `${name}'s screen`));
+  document.querySelectorAll('.tab[data-view="home"] .tab-label').forEach((b) => (b.textContent = `${name}'s screen`));
+  $('#family-title').textContent = `How's ${name} doing?`;
   renderHero(name);
+  renderStats();
   renderTimeline();
   renderCheckins();
   renderFeed();
@@ -95,6 +97,18 @@ function statusOf() {
 function presenceToday() {
   const today = S.timeline.filter((s) => dayKey(s.at) === S.today && ['indoor_motion', 'door_open', 'door_closed', 'resident_ok'].includes(s.kind) && minuteOfDay(s.at) >= 240);
   return { first: today[0], last: today[today.length - 1] };
+}
+
+function renderStats() {
+  const { first, last } = presenceToday();
+  const today = S.timeline.filter((s) => dayKey(s.at) === S.today);
+  const tiles = [
+    [first ? fmt(first.at) : '—', 'First seen today'],
+    [last ? fmt(last.at) : '—', 'Last activity'],
+    [String(today.filter((s) => s.kind === 'visitor_ring').length), 'Doorbell rings'],
+    [String(today.filter((s) => s.kind === 'delivery').length), 'Deliveries'],
+  ];
+  $('#stats').innerHTML = tiles.map(([v, l]) => `<div class="stat"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('');
 }
 
 function renderHero(name) {
@@ -151,7 +165,7 @@ function renderTimeline() {
   }
   if (dayKey(S.now) === S.today) svg += `<line class="tl-now" x1="${x(minuteOfDay(S.now))}" x2="${x(minuteOfDay(S.now))}" y1="18" y2="${H - 24}"/><text class="tl-hour tl-now-label" x="${x(minuteOfDay(S.now))}" y="${H - 18}" text-anchor="middle">now</text>`;
   $('#timeline').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="timeline-text">${svg}</svg>`;
-  $('#legend').innerHTML = '<span><i style="background:var(--ok)"></i>Inside</span><span><i style="background:var(--info)"></i>Door</span><span><i style="background:var(--accent)"></i>Doorbell</span><span><i style="background:#8b5a2b"></i>Delivery</span><span><i style="background:var(--ok);opacity:.3"></i>Usual wake-up</span>';
+  $('#legend').innerHTML = '<span><i style="background:var(--teal)"></i>Inside</span><span><i style="background:var(--blue)"></i>Door</span><span><i style="background:var(--yellow-deep)"></i>Doorbell</span><span><i style="background:var(--orange)"></i>Delivery</span><span><i style="background:var(--teal);opacity:.3"></i>Usual wake-up</span>';
   const { first } = presenceToday();
   $('#timeline-text').textContent = `Today: ${first ? `first activity at ${fmt(first.at)}` : 'no activity yet'}, ${today.filter((s) => s.kind === 'visitor_ring').length} doorbell rings, ${today.filter((s) => s.kind === 'delivery').length} deliveries. Usually up between ${r.firstActivity ? `${hm(r.firstActivity.p10)} and ${hm(r.firstActivity.p90)}` : 'unknown times'}.`;
 }

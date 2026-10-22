@@ -6,6 +6,9 @@
   <title>Porchlight</title>
   <meta name="description" content="Gentle, absence-aware check-ins for loved ones living alone, built on Ring.">
   <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Condensed:wght@700;900&display=swap">
   <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
@@ -13,14 +16,14 @@
   <header class="topbar">
     <div class="brand">
       <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="13" r="6" class="glow"/><path d="M10 26h12M13 22h6M16 19v3" class="stem"/><circle cx="16" cy="13" r="3.2" class="bulb"/></svg>
-      <span class="brand-name">Porchlight</span>
+      <span class="brand-name">porchlight</span>
     </div>
     <div class="who" id="who" aria-live="polite"></div>
     <nav class="tabs" aria-label="Views">
-      <button class="tab" data-view="family" aria-current="page">Family</button>
-      <button class="tab" data-view="home">Rose's screen</button>
-      <button class="tab" data-view="alexa">Alexa+</button>
-      <button class="tab" data-view="scenes">Behind the scenes</button>
+      <button class="tab" data-view="family" aria-current="page"><svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg><span class="tab-label">Family</span></button>
+      <button class="tab" data-view="home"><svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="11" rx="2"/><path d="M9 20h6M12 16v4"/></svg><span class="tab-label">Rose's screen</span></button>
+      <button class="tab" data-view="alexa"><svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><span class="tab-label">Alexa+</span></button>
+      <button class="tab" data-view="scenes"><svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span class="tab-label">Behind the scenes</span></button>
     </nav>
     <span class="mode" id="mode"></span>
   </header>
@@ -28,10 +31,11 @@
   <main id="main">
     <!-- Family app -->
     <section class="view" id="view-family" aria-labelledby="family-title">
-      <h1 class="sr-only" id="family-title">Family dashboard</h1>
+      <h1 class="page-title" id="family-title">How's Rose doing?</h1>
       <div class="family-grid">
         <div class="col-main">
           <article class="hero" id="hero" aria-live="polite"></article>
+          <div class="stats" id="stats" aria-label="Today at a glance"></div>
           <section class="card" aria-labelledby="today-title">
             <div class="card-head">
               <h2 id="today-title">Today</h2>
@@ -126,7 +130,7 @@
 
     <!-- Control room -->
     <section class="view" id="view-scenes" hidden aria-labelledby="scenes-title">
-      <h1 class="sr-only" id="scenes-title">Behind the scenes</h1>
+      <h1 class="page-title" id="scenes-title">Behind the scenes</h1>
       <div class="scenes-grid">
         <section class="card" aria-labelledby="sc-title">
           <h2 id="sc-title">Demo days</h2>

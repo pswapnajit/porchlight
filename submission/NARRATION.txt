@@ -1,0 +1,24 @@
+Porchlight demo video: narration (9 lines, about 2 minutes)
+
+How to record: QuickTime Player > File > New Audio Recording > red button.
+Read the lines in order, calmly. Leave a 2-second pause between lines.
+Stop, then File > Save to the Desktop as "narration". Tell Claude "narration is on the Desktop".
+
+1. Ring tells you when something happens. Porchlight notices when something doesn't. Rose is 78, and lives alone. Every day, her daughter Maria wonders: is Mom up and about?
+
+2. Porchlight uses Rose's own Ring devices. From four weeks of Ring event history, it learned her day. She's usually up between 7:31 and 8:23, so if there's no sign of her by 9:10, it checks in.
+
+3. Here's a hot afternoon. A delivery arrives, and Ring itself classifies it as a package. Every event arrives as a signed webhook. The package starts a timer, shorter today because it's 31 degrees inside. When it runs out, Porchlight takes a doorbell snapshot, blacks out the privacy zones, and checks: is the box still there? It is. So Porchlight checks in with Rose first.
+   (If the Bedrock key is in, say instead: "...blacks out the privacy zones, and asks a vision model on Amazon Bedrock: is the box still there? It is. ...")
+
+4. Rose doesn't need a tablet. Porchlight is on the Fire TV she already watches: one calm card, read aloud, and one button. She presses OK on the remote, and Maria gets an all clear. When the doorbell rings, the TV shows the porch, and who's due.
+
+5. If Rose doesn't answer, the ladder climbs: a chime, a text, then Maria. One tap of "I'm on it" stops everyone else being woken. Who gets told is never a model's decision. The rules are deterministic, and tested.
+
+6. Maria can just ask Alexa. Porchlight is a self-hosted MCP server, built to the November 2025 spec, and this page is a real MCP client, with an MCP Apps card for screens. And Rose can answer a check-in by voice.
+
+7. This is the live Ring API. In the Ring Developer Playground, I simulate a package at the front door. The Playground has no webhooks, so Porchlight polls event history, and the delivery lands on Rose's timeline.
+
+8. Everything talks to Ring through ring-partner-kit: a typed, zero-dependency client with signed webhooks, privacy masking, and a full Ring simulator. It's open source, with 41 tests across the project.
+
+9. Porchlight. It never looks inside. It just notices.

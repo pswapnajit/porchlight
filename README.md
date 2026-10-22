@@ -106,7 +106,7 @@ Simulate Package, Vehicle or Motion events in the Playground and watch Porchligh
 - **Ambient:** a large clock, a greeting, today's care visit, and the same promise as her home screen: "Your family can see if you're up and about… They can't see inside your home."
 - **Check-in:** when Porchlight checks in, the TV shows one calm full-screen card with one big focused button ("I'm OK", or "I brought it in" for a package), and reads the message aloud with Android TextToSpeech. The OK button on the remote answers it. Voice still works through the Alexa+ tool `resident_im_ok`: *"Alexa, tell Porchlight I'm OK."*
 - **Doorbell:** when the doorbell rings, the privacy-masked Ring snapshot and, if the care schedule expects someone then, who is due ("Ana (home aide) is due at 10:00 AM"). That comes from the schedule, never from recognizing a face.
-- **Fire OS rules:** `LEANBACK_LAUNCHER`, `android.software.leanback` and `android.hardware.touchscreen` not required, a 320×180 banner, minSdk 28 (Fire OS 7), no Google Play Services. Large type, WCAG AA contrast (the lowest text pair is 6.7:1), an unmistakable D-pad focus state, and no zoom, glow or pulse animations.
+- **Fire OS rules:** `LEANBACK_LAUNCHER`, `android.software.leanback` and `android.hardware.touchscreen` not required, a 320×180 banner, minSdk 28 (Fire OS 7), no Google Play Services. Large type, the same light design as the web app, WCAG AA contrast (the lowest text pair is 4.7:1), an unmistakable D-pad focus state, and no zoom, glow or pulse animations.
 
 | Ambient | Doorbell |
 |---|---|

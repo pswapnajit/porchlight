@@ -84,7 +84,7 @@ npm run probe       # checks the token: devices, history, a snapshot
 npm start           # Porchlight against api.amazonvision.com
 ```
 
-Simulate Package, Vehicle or Motion events in the Playground and watch Porchlight react.
+In the Playground, open a scenario live stream (for example the package one). Porchlight picks it up from Event History as a live view, and **Check the porch now** in Behind the scenes pulls a real snapshot from the Playground camera.
 
 **Amazon Bedrock:** add `AWS_BEARER_TOKEN_BEDROCK` (a Bedrock API key) to `.env`. The vision check, evening note and "Ask Porchlight" then use Bedrock. Without it they fall back to clearly labeled offline behavior.
 

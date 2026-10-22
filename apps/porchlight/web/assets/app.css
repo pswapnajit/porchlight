@@ -275,6 +275,7 @@ main { max-width: 1360px; margin: 0 auto; padding: 24px 20px; }
 .mono-list li { display: grid; grid-template-columns: 74px 40px 1fr 52px; gap: 8px; padding: 4px 8px; border-radius: 8px; }
 .mono-list li:nth-child(odd) { background: var(--surface-2); }
 .mono-list .s2 { color: var(--teal-ink); } .mono-list .s3 { color: var(--blue); } .mono-list .s4, .mono-list .s5, .mono-list .s0 { color: var(--red-ink); }
+.mono-list li.note { display: block; font-family: var(--font); font-size: 0.86rem; color: var(--muted); background: transparent; }
 .mono-list .path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .activity { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; max-height: 360px; overflow: auto; font-size: 0.88rem; }
 .activity li { display: grid; grid-template-columns: 70px 74px 1fr; gap: 10px; }
@@ -283,6 +284,9 @@ main { max-width: 1360px; margin: 0 auto; padding: 24px 20px; }
 .ai-row { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; font-size: 0.9rem; margin-bottom: 4px; }
 .ai-row dt { color: var(--muted); }
 .ai-row dd { margin: 0; }
+.porch-shot { margin: 14px 0 0; }
+.porch-shot img { width: 100%; border-radius: 14px; display: block; }
+.porch-shot figcaption { font-size: 0.84rem; color: var(--muted); margin-top: 6px; }
 video.live { width: 100%; border-radius: 14px; background: #000; margin-top: 10px; }
 
 /* ---------- dock & toasts ---------- */

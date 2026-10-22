@@ -111,30 +111,21 @@ The most useful signal in a home is often the one that didn't fire. And for a ca
 
 ---
 
-## Demo video script (2:45)
+## Demo video (2:44)
 
-Target length: 2:45, which is under the 3:00 limit judges watch to. Record at 1440×900 or larger, with the app at 100% zoom.
-
-**Before recording:**
-- `npm run demo` (port 4000) for segments 1–6. Add `AWS_BEARER_TOKEN_BEDROCK` to `.env` first, so the porch check and the answers come from Bedrock (the AWS Builder judges will look for it). Without it, the screen says "Simulator ground truth (no Bedrock configured)".
-- **Keep third-party trademarks out of frame** (a rule): record the TV only while Porchlight TV fills the screen, never the Google TV launcher behind it, and show code in the terminal rather than on github.com.
-- For segment 4: the Android TV emulator with Porchlight TV installed and open, against the same `npm run demo` (README, "Fire TV"). Run the emulator with a window so it can be screen-recorded with its sound, or record it with `adb shell screenrecord` (no sound). Keep the TV's read-aloud low under the voice-over.
-- For segment 7: a fresh Playground token in `.env` (it lasts about 30 minutes), then `npm start` in a second terminal on another port (`PORT=4001 npm start`), and the Ring Developer Playground open in a browser tab.
-- **Segment 7 is required for the Ring track.** The rules say the video must show the project working through "a simulator or an actual Ring device", meaning one listed in Ring's documentation. That is the Developer Playground, not Porchlight's own simulator.
+The video is built from real captures of Porchlight: the web app in headless Chrome, the Fire TV app on the Android TV emulator, and a screen recording of the Ring Developer Playground. The voice-over is mine.
 
 | Time | On screen | Voice-over |
 |---|---|---|
-| **0:00–0:12** | Title card, then the Family dashboard (open check-in, Maria's phone) | "Ring tells you when something happens. Porchlight notices when something doesn't. Rose is 78 and lives alone. Every day, her daughter Maria wonders: is Mom up and about?" |
-| **0:12–0:25** | "What Porchlight learned" card; Today timeline with the dashed check-in line | "Porchlight uses Rose's own Ring devices. From four weeks of Event History it learned her day: usually up by [8:25], so if there's no sign of her by [9:15], it checks in." *(Read both times off the "What Porchlight learned" card on the day you record: the demo's four weeks of history are generated relative to today, so they shift by a few minutes.)* |
-| **0:25–1:00** | Behind the scenes → Play "A package in the heat" at 240×. Webhook list fills (HMAC verified). Cut to the check-in card with the masked snapshot | "Here's a hot afternoon. A delivery arrives, and Ring itself classifies it as a package. That starts a timer, shorter today because it's 31 degrees inside. When it runs out, Porchlight takes a doorbell snapshot, blacks out the privacy zones, and asks a vision model on Amazon Bedrock: is the box still there? It is. So Porchlight checks in with Rose first." |
-| **1:00–1:20** | **Fire TV** (Android TV emulator): the check-in fills Rose's TV and is read aloud; OK on the remote; "Thank you, Rose."; the family dashboard shows it resolved, "No one else was bothered". Then a doorbell ring: the TV's visitor card | "Rose doesn't need a tablet. Porchlight is on the Fire TV she already watches: one calm card, read aloud, and one button. She presses OK on the remote, and that's it. Maria is never bothered. And when the doorbell rings, it shows the porch and who's due." |
-| **1:20–1:35** | A second run where Rose doesn't answer (or "A quiet morning"): check-in card with ladder steps and times; tap "I'm on it" | "If Rose doesn't answer, the ladder climbs: a text, then Maria, then the family. One tap of 'I'm on it' stops everyone else being woken. Who gets told is never a model's decision; the rules are deterministic and tested." |
-| **1:35–1:57** | Alexa+ tab: "Alexa, ask Porchlight how Mom is doing" → reply + MCP App card; MCP traffic panel; then "(Rose) Alexa, tell Porchlight I'm OK" | "Maria can just ask Alexa. Porchlight is a self-hosted MCP server, spec 2025-11-25, and this page is a real MCP client, with an MCP Apps card for screens. And Rose can answer a check-in by voice." |
-| **1:57–2:27** | Split: Ring Developer Playground → simulate a Package event. Porchlight (live, `api.amazonvision.com`) → Behind the scenes, API log shows the Event History calls; the event lands on the timeline | "This is the live Ring API. In the Developer Playground I simulate a package at the front door. The Playground has no webhooks, so Porchlight polls Event History, and seconds later the delivery is on Rose's timeline, ready to start the same timer." [[FILL: adjust to what the live run shows]] |
-| **2:27–2:40** | Terminal: `npm test` passing (41), then a title card with both repo URLs | "Everything talks to Ring through ring-partner-kit: a typed, zero-dependency client with HMAC webhooks, privacy masking and a full Ring simulator. It's open source, with 41 tests across the project." |
-| **2:40–2:45** | Rose's TV, ambient: "They can't see inside your home." Logo. | "Porchlight. It never looks inside. It just notices." |
-
-About 325 spoken words. At a calm 150 words a minute that is about 2:10 of speech, which leaves roughly 35 seconds of silence for the moments that need it: the scenario playing, the TV reading the check-in, the Alexa card appearing, the Playground event landing. Segments 2 and 5 run near 150 wpm, so trim a word or two there if they feel rushed.
+| **0:00** | Title card, then the family dashboard on the heat day | "Ring tells you when something happens. Porchlight notices when something doesn't. Rose is 78, and lives alone. Every day, her daughter Maria wonders: is Mom up and about?" |
+| **0:14** | "What Porchlight learned" card and the Today timeline | "Porchlight uses Rose's own Ring devices. From four weeks of Ring event history, it learned her day. She's usually up between 7:31 and 8:23, so if there's no sign of her by 9:10, it checks in." |
+| **0:31** | Behind the scenes: "A package in the heat" plays; Ring API calls and signed webhooks arrive; the package check-in with the privacy-masked snapshot | "Here's a hot afternoon. A delivery arrives, and Ring itself classifies it as a package. Every event arrives as a signed webhook. The package starts a timer, shorter today because it's 31 degrees inside. When it runs out, Porchlight takes a doorbell snapshot, blacks out the privacy zones, and checks: is the box still there? It is. So Porchlight checks in with Rose first." |
+| **1:01** | Fire TV (Android TV emulator): the check-in card, OK on the remote, "Thank you, Rose."; Maria's "All clear"; then the doorbell card | "Rose doesn't need a tablet. Porchlight is on the Fire TV she already watches: one calm card, read aloud, and one button. She presses OK on the remote, and Maria gets an all clear. When the doorbell rings, the TV shows the porch, and who's due." |
+| **1:22** | "A quiet morning": the ladder climbs, Maria taps "I'm on it" | "If Rose doesn't answer, the ladder climbs: a chime, a text, then Maria. One tap of 'I'm on it' stops everyone else being woken. Who gets told is never a model's decision. The rules are deterministic, and tested." |
+| **1:41** | Alexa+ tab: "how Mom's doing" with the MCP Apps card and MCP traffic; then Rose answers by voice | "Maria can just ask Alexa. Porchlight is a self-hosted MCP server, built to the November 2025 spec, and this page is a real MCP client, with an MCP Apps card for screens. And Rose can answer a check-in by voice." |
+| **2:01** | The Ring Developer Playground streams its "package" scenario; Porchlight, live against `api.amazonvision.com`, logs the live views from Event History and shows the real snapshot it pulled from that camera | "This is the live Ring API. In the Ring Developer Playground, I open the package live stream. The Playground has no webhooks, so Porchlight polls event history, sees the live view, and pulls a real snapshot from the same camera." |
+| **2:20** | `npm test` (41 passing), then both repo URLs | "Everything talks to Ring through ring-partner-kit: a typed, zero-dependency client with signed webhooks, privacy masking, and a full Ring simulator. It's open source, with 41 tests across the project." |
+| **2:38** | Rose's TV, ambient; closing card | "Porchlight. It never looks inside. It just notices." |
 
 ---
 
@@ -160,24 +151,27 @@ The form asks the same five questions for each tool, API and SDK.
 - There is no device type or placement field, so "front door" or "indoor" has to be inferred from capabilities and then confirmed by the user.
 - The docs themselves note that no API exposes whether Smart Alerts is enabled, so an app can't tell "no classification" from "nothing classified".
 
-**Onboarding (zero to hello world).** The API reference is thorough, and the Playground token gets you to a first `GET /v1/devices` in minutes with no device and no app registration. The slow part was everything event-driven: without webhooks in the Playground, and with a hello-world sample that verifies webhooks the wrong way, I wrote the webhook layer from the reference and built a local simulator to test against. [[FILL: time from token to first live device list, e.g. "about 5 minutes"]]
+**Onboarding (zero to hello world).** The API reference is thorough, and the Playground token gets you to a first `GET /v1/devices` in minutes with no device and no app registration. The slow part was everything event-driven: without webhooks in the Playground, and with a hello-world sample that verifies webhooks the wrong way, I wrote the webhook layer from the reference and built a local simulator to test against. From a fresh Playground token to the first live device list (`npm run probe`) took about five minutes.
 
 **Would I build with it again?** **Yes.** Ring devices are already in millions of homes, and the API exposes exactly the signals a non-security app needs (classified events, history and privacy settings) without ever needing to look inside the home. Fixing F1–F3 would make it the easiest home-sensing platform I know of to build on.
 
 ### 2. Ring Developer Playground
 
-**What I used and for what.** Playground tokens for live mode (`npm run probe`, `npm start`): real device discovery, Event History, snapshots, and simulated Package, Vehicle and Motion events to drive Porchlight end to end without hardware.
+**What I used and for what.** Playground tokens for live mode (`npm run probe`, `npm start`): real device discovery ("Playground Device", a front-door camera), Event History polling, image snapshots, and the scenario live streams (such as "Live Stream: package") to drive Porchlight end to end without hardware.
 
-**What worked well.** No device and no app registration: generate a token and call the real API. Simulated events show up in Event History, so a whole app can be exercised against production endpoints. [[FILL: one concrete observation from the live run, e.g. "simulated Package events appeared in Event History within N s"]]
+**What worked well.** No device and no app registration: generate a token and call the real API. Opening a scenario live stream creates a real `on_demand` event in Event History, which Porchlight picked up on its next 15-second poll. While a stream is playing, `POST …/media/image/download` returns a real frame from it (the package on the porch, watermarked "Partner: RingDeveloperPortalPlayground"). The page also shows the exact WHEP request and response for each stream, which is a great reference.
 
 **What needs work.**
 - No webhook delivery, so event-driven apps must be rewritten as pollers to use it (friction F1).
 - Tokens last about 30 minutes, which interrupts longer test sessions and demo recordings. A refresh flow, or a longer-lived sandbox token, would help.
+- Scenario streams are recorded as `on_demand` (live view) events, not as `motion_detected` with a `sub_type`. So an app that reacts to Ring's classification (`package_delivery`, `human`) can't be tested in the Playground at all (friction F11).
+- Event History in the Playground ignores the `event_types` filter (friction F10).
+- Snapshots only work while a stream is playing. Otherwise the download fails with `422 GRECO_NO_VALID_KEY`, and a range that starts before the token was issued fails with `403 TIME_RANGE_NOT_AUTHORIZED` (friction F12).
 - Cameras only, so sensor and chime features (Early Access) can't be tested.
 
 **Onboarding.** Fastest part of the whole stack: about a minute from the console to a working token.
 
-**Would I build with it again?** **Yes.** It is the right idea, a zero-hardware sandbox against the real API. With webhook delivery it would cover the whole development loop.
+**Would I build with it again?** **Yes.** It is the right idea, a zero-hardware sandbox against the real API. With webhook delivery and classified test events, it would cover the whole development loop.
 
 ### 3. Amazon Bedrock (Converse API)
 
@@ -192,11 +186,10 @@ Auth is a Bedrock API key (`AWS_BEARER_TOKEN_BEDROCK`) or normal AWS credentials
 - One API for text and image input. The vision check and the note share a single code path, and switching models is a config change.
 - Bedrock API keys remove the IAM setup that usually stands between a hackathon project and its first model call.
 - Usage (input and output tokens) comes back on every response, so per-decision cost is easy to log.
-- [[FILL after the live run: latency and quality, e.g. "Nova Lite answered the porch check in about N s and correctly said 'unsure' on the infrared night frame"]]
 
-**What needs work.** [[FILL after the live run: anything real, e.g. model access approval, a region or model ID mismatch, or JSON adherence]]. One wish: a built-in JSON-schema response mode for Converse across models, so the strict-JSON contract doesn't need prompt engineering and a parser.
+**What needs work.** I built the integration to the documented Converse request and response shapes and tested the guardrail on sample model replies (valid JSON, low confidence, "unsure", prose, fenced JSON). I did not have Bedrock access during the hackathon, so latency and output quality are untested. One wish: a built-in JSON-schema response mode for Converse across models, so the strict-JSON contract doesn't need prompt engineering and a parser.
 
-**Onboarding.** [[FILL: e.g. "API key to first Converse call: N minutes"]]
+**Onboarding.** The Converse API reference and the Bedrock API key flow are short and clear. Wiring image plus text into one request took minutes; the strict-JSON guardrail took longer.
 
 **Would I build with it again?** **Yes.** Choosing a model is a config line, and a Bedrock API key makes it practical for a small team.
 
@@ -208,11 +201,10 @@ Auth is a Bedrock API key (`AWS_BEARER_TOKEN_BEDROCK`) or normal AWS credentials
 - Tools are plain functions with zod schemas, the same shape as tools in the MCP SDK, so Porchlight's capabilities are described one way for both the agent and Alexa+.
 - `BedrockModel` takes the Bedrock API key directly, so there is no separate credential plumbing.
 - The agent loop (choose a tool, call it, answer) needed no glue code.
-- [[FILL after the live run: e.g. "it correctly chained get_open_checkins → check_porch_now for 'Is the package still out there?'"]]
 
-**What needs work.** [[FILL after the live run]]. Requests: a documented way to cap tool calls per turn, and a first-class "answer only from tools" mode for grounded assistants.
+**What needs work.** Without Bedrock access I exercised the agent's tools directly, not end to end through a model. Requests: a documented way to cap tool calls per turn, and a first-class "answer only from tools" mode for grounded assistants.
 
-**Onboarding.** Install, define one tool, and call `agent.invoke` (or the equivalent) quickly. The TypeScript docs are thinner than the Python ones. [[FILL: confirm against what you saw]]
+**Onboarding.** Install, define one tool, and call `agent.invoke` (or the equivalent) quickly. The TypeScript docs are thinner than the Python ones.
 
 **Would I build with it again?** **Yes**, for any assistant that has to answer from an app's own data.
 
@@ -273,7 +265,7 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 ### F1. The Developer Playground doesn't deliver webhooks
 
 - **Task attempted:** Run Porchlight's real-time path (motion, package and button events) against the live Ring API without hardware.
-- **Steps taken:** Generated a Playground token. Ran `npm start` against `api.amazonvision.com`. Simulated Package, Vehicle and Motion events in the Playground. Looked for a place to register a webhook URL.
+- **Steps taken:** Generated a Playground token. Ran `npm start` against `api.amazonvision.com`. Opened the Playground's scenario live streams. Looked for a place to register a webhook URL.
 - **Expected:** The Playground POSTs signed webhooks (`motion_detected` with `sub_type`) to a URL I provide, as production does.
 - **Actual:** There is no webhook configuration or delivery in the Playground. Events are only visible through Event History.
 - **Severity:** High. Every event-driven Ring app has to grow a second, polling architecture just to use the sandbox, and the webhook code path (HMAC verification, dedup, fast acknowledgement) can't be tested live at all.
@@ -329,7 +321,7 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 - **Expected:** One vocabulary.
 - **Actual:** Webhooks list `human`, `vehicle`, `package_delivery` and `other_motion` (plus `motion` when Smart Alerts is off). The Event History filter table lists `motion.human`, `motion.vehicle`, `motion.animal` and `motion.other_motion`: it adds `animal` and leaves out `package_delivery`, the subtype a delivery app depends on most.
 - **Severity:** Low (documentation), but it affects which filters a client dares to send.
-- **Workaround used:** Query the union of both lists (5 filters) and treat the vocabulary as open-ended. [[FILL: after `npm run probe`, note whether `motion.package_delivery` and `motion.animal` returned events in the Playground]]
+- **Workaround used:** Query the union of both lists (5 filters) and treat the vocabulary as open-ended. In the Playground both filters were accepted, but the answer can't be trusted there, because it ignores filters altogether (F10).
 - **Suggestion:** Publish one subtype table and link to it from both places.
 
 ### F7. There is no Fire OS emulator image
@@ -362,6 +354,36 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 - **Severity:** Medium for TV apps: nothing errors, and the focus state is the whole interaction model on a remote.
 - **Workaround used:** Drive the button's colors and border from `Modifier.onFocusChanged`, which always reports the current state (`apps/porchlight-tv/.../ui/Screens.kt`, `PorchButton`).
 - **Suggestion:** Cover initial focus on screen changes in the Fire TV focus guidance (`vega-tv-interfaces-sample` already covers focus for Vega), with this pattern, and use it in the samples.
+
+### F10. The Developer Playground ignores the `event_types` filter on Event History
+
+- **Task attempted:** Classify Playground events the way Porchlight classifies production history: one unfiltered query, then one query per composite filter.
+- **Steps taken:** With two events in the Playground camera's history (both `on_demand`, from scenario streams), called `GET /v1/history/devices/{id}/events` with `event_types=motion`, `motion.package_delivery`, `ding` and `on_demand`.
+- **Expected:** Only `on_demand` returns the two events; the other filters return nothing.
+- **Actual:** Every filter returned the same two `on_demand` events.
+- **Severity:** Medium. Filter-based logic (and F2's workaround for the missing `sub_type`) silently mislabels events in the sandbox, so it can't be tested there.
+- **Workaround used:** Porchlight keys on each event's own `event_type` first, and only uses the filter that returned it to fill in a motion `sub_type`, so the stray `on_demand` events still read as live views ("Live view opened in the Ring app at 5:00 PM").
+- **Suggestion:** Apply `event_types` in the Playground exactly as in production.
+
+### F11. Playground scenario streams can't produce classified events
+
+- **Task attempted:** Drive Porchlight's package flow (Ring's `package_delivery` classification starts a timer) from the Playground.
+- **Steps taken:** Opened "Live Stream: package" in the Playground, watched it play, then read Event History.
+- **Expected:** The package scenario produces a `motion` event with `sub_type` `package_delivery` (and a webhook, see F1), like a real doorbell would.
+- **Actual:** It produces only an `on_demand` (live view) event. There is no way to create a classified motion event, a doorbell press or a sensor event in the Playground.
+- **Severity:** Medium. The most valuable part of the API for a non-security app, Ring's own classification, can only be exercised against a self-built simulator.
+- **Workaround used:** The full flow runs against `ring-partner-kit`'s simulator; the video shows the Playground part honestly as a live view plus a real snapshot.
+- **Suggestion:** Give each scenario stream a matching event (`motion_detected` with `sub_type`, written to Event History and sent as a webhook), plus buttons for `button_press` and the sensor events.
+
+### F12. Playground snapshots work only while a stream is playing
+
+- **Task attempted:** Take a porch snapshot with `POST /v1/devices/{id}/media/image/download`, as Porchlight does before every package check.
+- **Steps taken:** `latest_in_range` with PNG output: first with a range starting 23 hours back, then with a recent range, both with and without a scenario stream playing.
+- **Expected:** The latest frame, or a clear "no media in range" error.
+- **Actual:** A range starting before the token was issued fails with `403 TIME_RANGE_NOT_AUTHORIZED` (reasonable, but not in the snapshot docs). With a recent range, it worked once, 19 seconds after a stream (the 303 redirect led to a real PNG); every later attempt redirected to a pre-signed URL that returned `422 GRECO_NO_VALID_KEY`.
+- **Severity:** Medium. The error code doesn't say what's wrong, and the same call flips between working and failing.
+- **Workaround used:** Porchlight treats a failed snapshot as "ask a person", never as "the porch is clear", and shows the error.
+- **Suggestion:** Document that Playground snapshots need an active scenario stream, and return a 404-style "no media in range" instead of `GRECO_NO_VALID_KEY`.
 
 ---
 

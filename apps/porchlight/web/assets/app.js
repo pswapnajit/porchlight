@@ -245,7 +245,7 @@ function renderHome(name) {
 
 function renderScenes() {
   const sim = S.sim;
-  $('#sc-note').textContent = sim ? 'Each demo day runs on the simulated Ring account. Events reach Porchlight as signed webhooks and Ring API calls, exactly as they would from real devices.' : 'Live mode: events come from the Ring Partner API (Event History polling with the Developer Playground). Trigger Package, Vehicle or Motion events in the Playground and watch them arrive here.';
+  $('#sc-note').textContent = sim ? 'Each demo day runs on the simulated Ring account. Events reach Porchlight as signed webhooks and Ring API calls, exactly as they would from real devices.' : 'Live mode: events come from the Ring Partner API (Event History polling with the Developer Playground). Open a scenario live stream in the Playground, such as the package one: it shows up here as a live view, and Check the porch now pulls a real snapshot from the same camera.';
   $('#scenarios').innerHTML = sim ? sim.scenarios.map((s) => `<div class="scenario"><b>${esc(s.title)}</b><p>${esc(s.blurb)}</p><button class="btn primary small" data-scenario="${s.id}">Play</button></div>`).join('') : '';
   const ai = S.ai;
   $('#ai-status').innerHTML = `<dl class="ai-row"><dt>Rules</dt><dd>Deterministic and tested: who is told, and when, never depends on a model.</dd>
@@ -254,7 +254,7 @@ function renderScenes() {
     ${S.mode === 'live' ? '<button class="btn" id="porch-btn">Check the porch now</button> <button class="btn" id="live-btn">Live view (WHEP)</button>' : '<button class="btn" id="porch-btn">Check the porch now</button>'}`;
   $('#api-base').textContent = S.mode === 'live' ? 'api.amazonvision.com' : 'local simulator';
   $('#api-log').innerHTML = S.apiLog.slice(-60).reverse().map((l) => `<li><span>${esc(l.method)}</span><span class="s${String(l.status)[0]}">${l.status || 'ERR'}</span><span class="path" title="${esc(l.path)}">${esc(decodeURIComponent(l.path))}</span><span>${l.durationMs}ms</span></li>`).join('') || '<li>No calls yet.</li>';
-  $('#webhooks').innerHTML = sim ? sim.deliveries.slice().reverse().map((d) => `<li><span>${fmt(d.at)}</span><span class="s${String(d.status)[0]}">${d.status}</span><span class="path">${esc(d.type)}</span><span></span></li>`).join('') || '<li>No webhooks yet.</li>' : '<li>Webhooks need a public HTTPS URL registered in the Ring Developer Portal; the Playground does not send them, so Porchlight polls Event History instead.</li>';
+  $('#webhooks').innerHTML = sim ? sim.deliveries.slice().reverse().map((d) => `<li><span>${fmt(d.at)}</span><span class="s${String(d.status)[0]}">${d.status}</span><span class="path">${esc(d.type)}</span><span></span></li>`).join('') || '<li class="note">No webhooks yet.</li>' : '<li class="note">Webhooks need a public HTTPS URL registered in the Ring Developer Portal; the Playground does not send them, so Porchlight polls Event History instead.</li>';
   $('#activity').innerHTML = S.activity.slice(-80).reverse().map((a) => `<li><span class="t">${fmt(a.at)}</span><span class="k">${esc(a.kind)}</span><span>${esc(a.text)}</span></li>`).join('');
 }
 
@@ -340,7 +340,14 @@ document.addEventListener('click', async (e) => {
   if (t.id === 'digest-btn') { $('#digest').innerHTML = '<p class="muted">Writing…</p>'; return post('/api/digest'); }
   if (t.id === 'refresh-devices') return post('/api/devices/refresh');
   if (t.id === 'delete-data' && confirm('Delete everything Porchlight has stored about this household?')) return post('/api/data/delete');
-  if (t.id === 'porch-btn') { const r = await post('/api/porch/check'); toast(r.vision ? r.vision.description : r.error); return; }
+  if (t.id === 'porch-btn') {
+    $('#live-view').innerHTML = '<p class="muted">Taking a snapshot from the front-door camera…</p>';
+    const r = await post('/api/porch/check');
+    $('#live-view').innerHTML = r.snapshot
+      ? `<figure class="porch-shot"><img src="${esc(r.snapshot.url)}" alt="Front-door camera snapshot"><figcaption>Ring snapshot at ${fmt(r.snapshot.at)} · ${esc(r.vision?.description ?? '')}</figcaption></figure>`
+      : `<p class="muted">${esc(r.error ?? r.vision?.description ?? 'No snapshot')}</p>`;
+    return;
+  }
   if (t.id === 'live-btn') return liveView();
   if (t.classList.contains('chip') && t.closest('#ask-chips')) { $('#ask-input').value = t.textContent; $('#ask-form').requestSubmit(); }
 });

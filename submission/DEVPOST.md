@@ -414,6 +414,7 @@ Severity: **High** blocks or silently breaks a common path; **Medium** costs rea
 - **Amazon Bedrock, Converse API** (`@aws-sdk/client-bedrock-runtime`): image plus text input to Amazon Nova Lite for the porch vision check, with a strict JSON contract and a confidence guardrail that falls back to "ask a person"; Amazon Nova Pro for the evening note from structured facts. Code: `apps/porchlight/src/ai/bedrock.ts`, `vision.ts`, `digest.ts`.
 - **Strands Agents SDK** (`@strands-agents/sdk`, TypeScript): the "Ask Porchlight" agent on `BedrockModel` with six tools, including one that triggers a live Ring snapshot and vision check. Code: `apps/porchlight/src/ai/agent.ts`. The same agent answers Alexa+ questions through the MCP `ask` tool.
 - **Pipeline:** Ring classification (free, stage 0) → timer → Ring snapshot → privacy mask → Bedrock vision (once per decision) → deterministic ladder. The model never decides who gets told.
+- **Auth and fallback:** a Bedrock API key (`AWS_BEARER_TOKEN_BEDROCK`) or standard AWS credentials; without either, each feature falls back to clearly labeled offline behavior. I didn't have Bedrock access during the hackathon, so the demo video runs that offline path.
 
 ---
 

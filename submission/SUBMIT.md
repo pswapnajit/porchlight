@@ -1,126 +1,86 @@
-# Submitting Porchlight: the complete process
+# Submitting Porchlight: the exact steps
 
-**Deadline: Saturday 24 October 2026, 00:30 IST** (Friday 23 October, 12:00 PT). Aim to press Submit by **Friday 23 October, 21:00 IST**, which leaves 3½ hours for surprises. Devpost lets you edit the entry until the deadline, so submit early and polish afterwards.
+**Deadline: tonight, Saturday 24 October, 00:30 IST.** Aim to press Submit by **Friday 23 October, 21:00 IST**. Devpost lets you edit the entry until the deadline, so submit as soon as it's complete and polish afterwards.
 
-Everything you paste into the form is in [`DEVPOST.md`](DEVPOST.md). This file is the order to do it in.
+**Who does what.** I build the whole video from automatic screen captures (the web app in headless Chrome, the TV on the emulator), run the live Ring test, fill the remaining blanks in `DEVPOST.md`, and give you a page with a Copy button for every Devpost field. Your part is below. It's about an hour, in short pieces.
 
-## Where things stand
-
-| | Status |
-|---|---|
-| Code: web app, Ring engine, Alexa+ MCP server, Fire TV app, `ring-partner-kit` | ✅ Done. 41 tests pass. Fire TV checked on the Android TV emulator. |
-| Public repos | ✅ [pswapnajit/porchlight](https://github.com/pswapnajit/porchlight) and [pswapnajit/ring-partner-kit](https://github.com/pswapnajit/ring-partner-kit), both MIT. The latest commits (Fire TV and fixes) are local until you OK a push. |
-| Devpost text, feedback, friction log (F1–F9), Open Source fields | ✅ Written. 11 `[[FILL]]` markers wait for the live run and the video URL. |
-| Screenshots and thumbnail | ✅ `docs/screenshots/` |
-| Live Ring Playground run | ⏳ Needs your token (step 1) |
-| Live Bedrock run | ⏳ Needs your Bedrock API key (step 1), optional but strongly recommended |
-| Video | ⏳ You record (step 3) |
-| YouTube and the Devpost form | ⏳ You (steps 4–5) |
-
-## Timeline
-
-| When (IST) | Step | Who | Time |
+| # | Your step | When | Time |
 |---|---|---|---|
-| Thu 22 Oct, morning | 1. Keys and live run | You (10 min), then me | 40 min |
-| Thu 22 Oct | 2. Push the latest commits | Me, after your OK | 2 min |
-| Thu 22 Oct, afternoon | 3. Record the video | You | 2–3 h |
-| Thu 22 or Fri 23 Oct | 4. Upload to YouTube | You | 15 min |
-| Fri 23 Oct, by 21:00 | 5. Fill and submit the Devpost form | You | 45 min |
-| After submitting | 6. Check the entry | You | 10 min |
+| 1 | Put the Ring Playground token into `.env` | Now | 5 min |
+| 2 | (Optional) Put a Bedrock API key into `.env` | Now | 10 min |
+| 3 | Record one short clip of the Ring Developer Playground | When I say "ready for the Playground clip" | 5 min |
+| 4 | Choose the narration: computer voice, or record yours | Any time before 18:00 | 0–15 min |
+| 5 | Watch the video I send, then upload it to YouTube | When I send it | 15 min |
+| 6 | Fill the Devpost form and submit | By 21:00 | 30 min |
+| 7 | Check the submitted entry | After submitting | 5 min |
+
+Every Terminal command below is one line. Copy it, paste it into **Terminal** (⌘Space, type "Terminal", Enter), and press Enter.
 
 ---
 
-## 1. Keys and the live run
+## Step 1. Ring Playground token (5 min, now)
 
-### a. Ring Developer Playground token (required: the Ring video must show the Playground)
+1. Open **https://developer.amazon.com/ring/console/playground** in Chrome and sign in with your Amazon developer account.
+2. Click **Generate Token**, then copy the token (select it and press ⌘C, or use its copy button).
+3. Paste this into Terminal. It copies the token from your clipboard into `.env` without showing it:
+   ```bash
+   cd ~/Documents/Experiment/amazon && sed -i '' "s|^RING_ACCESS_TOKEN=.*|RING_ACCESS_TOKEN=$(pbpaste)|" .env && grep -c '^RING_ACCESS_TOKEN=..' .env
+   ```
+   It should print `1`. If it prints `0`, copy the token again and repeat.
+4. Tell me: **"token is in"**. Never paste the token into the chat.
 
-1. Open https://developer.amazon.com/ring/console/playground and sign in.
-2. Click **Generate Token** and copy it.
-3. In `~/Documents/Experiment/amazon/.env`, set `RING_ACCESS_TOKEN=<the token>`. No quotes, and never paste it into a chat.
-4. Tell me "token is in". I'll run `npm run probe` and `npm start`, then fill the Ring `[[FILL]]`s in `DEVPOST.md` from what really happens.
+The token lasts about **30 minutes**. If I run out of time with it, I'll ask you for a fresh one (repeat 2–4).
 
-The token lasts **about 30 minutes**. Generate a new one right before you record segment 7 of the video.
+## Step 2. Bedrock API key (optional, 10 min)
 
-### b. Amazon Bedrock API key (recommended, for the AWS Builder mini challenge)
+This makes the porch vision check, the evening note and "Ask Porchlight" run on Amazon Bedrock for real, which helps the AWS Builder prize. It needs an AWS account. Skip it if you don't have one, and I'll describe the Bedrock part honestly as written but not run live.
 
-1. In the AWS console, switch to **US East (N. Virginia), us-east-1**, open **Amazon Bedrock → API keys**, and create a key.
-2. If Bedrock asks for model access, enable **Amazon Nova Lite** and **Amazon Nova Pro**.
-3. In `.env`, set `AWS_BEARER_TOKEN_BEDROCK=<the key>`.
-4. Tell me "Bedrock is in". I'll run the porch check, the evening note and "Ask Porchlight" for real, and fill the Bedrock and Strands `[[FILL]]`s.
+1. Open **https://console.aws.amazon.com/bedrock** and sign in.
+2. Top right, set the region to **US East (N. Virginia)**.
+3. In the left menu, open **API keys**. Generate a **long-term API key** (30 days is plenty) and copy it.
+4. If Bedrock asks you to enable model access, enable **Amazon Nova Lite** and **Amazon Nova Pro**.
+5. Paste this into Terminal:
+   ```bash
+   cd ~/Documents/Experiment/amazon && sed -i '' "s|^AWS_BEARER_TOKEN_BEDROCK=.*|AWS_BEARER_TOKEN_BEDROCK=$(pbpaste)|" .env && grep -c '^AWS_BEARER_TOKEN_BEDROCK=..' .env
+   ```
+   It should print `1`.
+6. Tell me: **"Bedrock is in"**.
 
-Cost: a few cents for the whole hackathon, because the vision model runs once per decision, not per motion event. Delete the key after judging ends (20 November).
+Cost: a few cents for the whole hackathon. Delete the key after 20 November.
 
-**If you skip Bedrock:** tell me, and I'll replace those `[[FILL]]`s with honest wording (the integration is written and documented but wasn't exercised live). The AWS Builder entry will be weaker, so getting the key is worth 10 minutes.
+## Step 3. The Ring Developer Playground clip (5 min, when I say "ready")
 
-## 2. Push the latest commits
+The rules say the Ring video must show Ring's own simulator, the Developer Playground. It's behind your Amazon login, so this one clip is yours. When I say **"ready for the Playground clip"**, Porchlight will be running live against your Playground at http://localhost:4001. Then:
 
-The Fire TV app and today's fixes are committed locally but not on GitHub yet. Judges only see what's pushed. Say "push" and I'll push `main` (the `ring-partner-kit` repo is unchanged). Then open both repo pages in a private window to confirm they're public and the About box shows **MIT license**.
+1. In Chrome, open two tabs: the **Ring Developer Playground**, and **http://localhost:4001** with **Behind the scenes** open.
+2. Press **⌘⇧5**, choose **Record Selected Portion**, drag the box over the Chrome window, and click **Record**.
+3. In the Playground tab, simulate a **Package** event on the camera. Wait a few seconds and do it once more.
+4. Switch to the **localhost:4001** tab and wait until the event appears in "Ring Partner API calls" or on the Family timeline. That takes up to 30 seconds, because the Playground has no webhooks and Porchlight polls.
+5. Stop the recording with the **■** button in the menu bar. The clip lands on your Desktop as "Screen Recording ….mov".
+6. Tell me: **"Playground clip done"**. I'll find it on the Desktop and cut it into the video.
 
-## 3. Record the video
+## Step 4. Narration (0–15 min)
 
-The script is in `DEVPOST.md` → **Demo video script (2:45)**. It must run under 3:00, in English. Keep in mind:
+- **Option A: computer voice.** Do nothing. The video uses a clear macOS voice.
+- **Option B: your voice** (sounds more personal):
+  1. Open `~/Documents/Experiment/amazon/submission/NARRATION.txt` (I'll create it with the final lines).
+  2. Open **QuickTime Player** → **File → New Audio Recording** → click the red button.
+  3. Read the lines in order, calmly, with a **2-second pause** between lines.
+  4. Click stop, then **File → Save** → name it `narration` → save to the **Desktop**.
+  5. Tell me: **"narration is on the Desktop"**. I'll sync each line to its segment.
 
-- **No copyrighted music.** Use no music, or royalty-free music you have rights to.
-- **No third-party trademarks.** Never show the Google TV launcher behind the TV app, and show code in the terminal, not on github.com. Amazon, Ring and Alexa are the sponsor's own marks and are fine.
-- **Segment 7 (the Ring Developer Playground) is required** for the Ring track.
-- **The Fire TV segment must show the app running on the TV emulator** for the Fire TV track.
+## Step 5. Watch the video, then upload it to YouTube (15 min)
 
-### Set up (about 15 minutes)
+I'll put the finished video at **`~/Desktop/porchlight-demo.mp4`** (under 3:00) and send it to you. Watch it once. If anything should change, tell me.
 
-Terminal 1, the simulated household, used for most segments:
-```bash
-cd ~/Documents/Experiment/amazon && npm run demo
-```
-
-Terminal 2, the TV emulator with a window, so you can screen-record it:
-```bash
-~/Library/Android/sdk/emulator/emulator -avd porchlight_tv -no-snapshot -no-boot-anim &
-```
-Once the TV home screen appears:
-```bash
-~/Library/Android/sdk/platform-tools/adb shell am start -n io.github.pswapnajit.porchlight.tv/.MainActivity
-```
-If Google's launcher or a promo dialog ever comes to the front, press Back and run the `am start` line again. Don't record the launcher.
-
-Browser: http://localhost:4000 in a window about 1440×900, at 100% zoom, with bookmarks and other tabs hidden.
-
-For segment 7 only, with a fresh Playground token in `.env`, in Terminal 3:
-```bash
-cd ~/Documents/Experiment/amazon && PORT=4001 npm start
-```
-Then open http://localhost:4001 next to the Ring Developer Playground tab.
-
-Close the TV emulator before segment 7 if the Mac feels slow (8 GB RAM).
-
-### Record (about 1–1½ hours)
-
-Record each segment as its own clip with **⌘⇧5 → Record Selected Portion**. Set Options → Microphone to "None" if you'll add the voice afterwards, or to the built-in mic to talk while you record.
-
-| Segment | What to do on screen |
-|---|---|
-| 1 Hook (0:00–0:12) | Family tab during "A package in the heat", paused at about 1:44 PM: open check-ins and Maria's phone. |
-| 2 Learned day (0:12–0:25) | Scroll to **What Porchlight learned**. Read the two times on the card and say those in the voice-over (the script has them in brackets). |
-| 3 Package in the heat (0:25–1:00) | **Behind the scenes → Play "A package in the heat"**, set 240× in the bottom bar. Show the webhooks list filling, then the check-in card with the masked snapshot. |
-| 4 Fire TV (1:00–1:20) | The TV emulator window shows the delivery check-in (read aloud). Press **Enter** in the emulator window (the remote's OK) and it shows "Thank you, Rose." Cut to the Family tab: resolved, "All clear". For the doorbell card, play "The aide can't get in" and record the TV at 10:00. |
-| 5 Ladder (1:20–1:35) | Play **"A quiet morning"**. Use **Skip ahead** until Maria is alerted, then click **I'm on it**. |
-| 6 Alexa+ (1:35–1:57) | **Alexa+** tab: click the chip "Alexa, ask Porchlight how Mom's doing", show the card and the MCP traffic, then the chip "(Rose) Alexa, tell Porchlight I'm OK". |
-| 7 Live Ring (1:57–2:27) | Ring Developer Playground: simulate a **Package** event on the camera. In Porchlight on :4001, **Behind the scenes** shows the Event History calls to `api.amazonvision.com`, and the event lands on the timeline (polling every 15 s, so wait for it). |
-| 8 Open source (2:27–2:40) | Terminal: `npm test` (41 pass), then a title card with both repo URLs (a Keynote slide works). |
-| 9 Close (2:40–2:45) | The TV's ambient screen with the privacy line. |
-
-### Voice-over and assembly (about 45 minutes)
-
-1. Read the voice-over column of the script at a calm pace, one segment at a time. QuickTime → **File → New Audio Recording**, or Voice Memos, works.
-2. Assemble in **iMovie** (free on the Mac): New Movie, drop the clips in order, add the narration, trim each clip to its segment, then **File → Share → File** at 1080p.
-3. Check that it runs **under 3:00**: aim for 2:45.
-
-**Or let me assemble it:** put the clips (`seg1.mov` … `seg9.mov`) and your narration in one folder and tell me where. I'll cut them to the script with ffmpeg and give you the MP4.
-
-## 4. Upload to YouTube
-
-1. https://studio.youtube.com → **Create → Upload videos**.
-2. **Title:** `Porchlight: gentle check-ins for a parent living alone (Ring, Alexa+, Fire TV)`
-3. **Description:**
+Then upload it:
+1. Open **https://studio.youtube.com** and sign in.
+2. Click **Create** (top right) → **Upload videos** → **Select files** → choose `porchlight-demo.mp4` on the Desktop.
+3. **Title:**
+   ```
+   Porchlight: gentle check-ins for a parent living alone (Ring, Alexa+, Fire TV)
+   ```
+4. **Description:**
    ```
    Porchlight notices when something doesn't happen. It learns an older parent's ordinary day from the Ring devices already at their door and checks in gently: first with them (chime, Fire TV, Alexa+), then with family.
 
@@ -128,10 +88,13 @@ Record each segment as its own clip with **⌘⇧5 → Record Selected Portion**
    Code: https://github.com/pswapnajit/porchlight
    Open-source Ring toolkit: https://github.com/pswapnajit/ring-partner-kit
    ```
-4. Set **No, it's not made for kids**. Set visibility to **Public**: the rules say "publicly visible", so don't use Unlisted or Private.
-5. Copy the video URL. Tell me, and I'll put it into `DEVPOST.md` (the last `[[FILL]]`), or replace it yourself.
+5. Choose **No, it's not made for kids**. Click **Next** three times.
+6. Under **Visibility**, choose **Public**: the rules say "publicly visible". Click **Publish**.
+7. Copy the video link and send it to me. I'll put it into the submission text and the copy page.
 
-## 5. Fill and submit the Devpost form
+## Step 6. Fill and submit the Devpost form (30 min)
+
+**Easiest way:** open `~/Documents/Experiment/amazon/submission/form.html` in Chrome (I'll make it once the blanks are filled). It lists every field below in form order, each with a **Copy** button: click Copy, click into the Devpost field, press ⌘V.
 
 Go to **https://devpost.com/submit-to/30992-build-ship-shape-amazon-developer-hackathon/manage/submissions** (or **My projects** on the hackathon page) and start a new project. Devpost's form has four steps. Paste from `DEVPOST.md` as follows. If a label differs, match it by meaning: the hackathon's own questions follow the rules' list.
 
@@ -169,7 +132,7 @@ Go to **https://devpost.com/submit-to/30992-build-ship-shape-amazon-developer-ha
 - Tick the agreement to the **Official Rules** and Devpost's terms, then **Submit**.
 - You should get a confirmation email, and the project shows as **Submitted** under My projects.
 
-## 6. After submitting
+## Step 7. After submitting
 
 - Open the public project page and check that the video plays, the images show and the links work.
 - Until judging ends (20 November), keep both repos public and don't push changes that break `npm run demo`. Judges may clone and run it.
